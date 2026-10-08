@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>English ↔ Hebrew Cards</title>
+<style>
+  :root { --bg:#fff7e6; --ink:#2b2b3a; --front:#ffd166; --back:#8ecae6; --accent:#ef476f; }
+  * { box-sizing:border-box; }
+  body { margin:0; min-height:100vh; background:var(--bg); color:var(--ink);
+         font-family:system-ui,-apple-system,sans-serif; display:flex; flex-direction:column; align-items:center; padding:16px; gap:16px; }
+  h1 { margin:0; font-size:1.4rem; }
+  #count { opacity:.7; }
+  .scene { perspective:1000px; width:min(90vw,420px); height:min(60vw,280px); min-height:220px; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+  .card { position:relative; width:100%; height:100%; transition:transform .5s; transform-style:preserve-3d; -webkit-transform-style:preserve-3d; }
+  .card.flipped { transform:rotateY(180deg); }
+  .face { position:absolute; inset:0; border-radius:24px; backface-visibility:hidden; -webkit-backface-visibility:hidden; display:flex; flex-direction:column;
+          align-items:center; justify-content:center; gap:8px; box-shadow:0 8px 24px rgba(0,0,0,.18); padding:12px; text-align:center; }
+  .front { background:var(--front); }
+  .back { background:var(--back); transform:rotateY(180deg); }
+  .emoji { font-size:3.5rem; line-height:1; }
+  .word { font-size:2.8rem; font-weight:700; }
+  .back .word { direction:rtl; font-size:3.4rem; }
+  .hint { font-size:.8rem; opacity:.6; }
+  .row { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; }
+  button { font:inherit; padding:10px 16px; border:0; border-radius:12px; background:var(--accent); color:#fff; cursor:pointer; }
+  .big { width:min(90vw,420px); flex-wrap:nowrap; }
+  .big button { flex:1; font-size:1.5rem; font-weight:700; padding:22px 10px; border-radius:16px; }
+  button.ok { background:#2a9d4a; }
+  button.no { background:#d62828; }
+  #score { font-size:1.2rem; font-weight:700; }
+  button.alt { background:#fff; color:var(--ink); border:2px solid var(--ink); }
+  details { width:min(90vw,420px); background:#fff; border-radius:12px; padding:10px 14px; }
+  summary { cursor:pointer; font-weight:600; }
+  form { display:flex; flex-direction:column; gap:8px; margin-top:10px; }
+  input { font:inherit; padding:8px; border:1px solid #bbb; border-radius:8px; }
+  input[name=he] { direction:rtl; }
+  ul { padding:0; margin:10px 0 0; list-style:none; max-height:180px; overflow:auto; }
+  li { display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid #eee; }
+  li button { padding:2px 8px; font-size:.8rem; }
+</style>
+</head>
+<body>
+  <h1>English ↔ עברית</h1>
+  <div id="count"></div>
+
+  <div class="scene" id="scene" title="Tap to flip">
+    <div class="card" id="card">
+      <div class="face front"><div class="emoji" id="fEmoji"></div><div class="word" id="fWord"></div><div class="hint">tap to flip</div></div>
+      <div class="face back"><div class="emoji" id="bEmoji"></div><div class="word" id="bWord"></div></div>
+    </div>
+  </div>
+
+  <div class="row big">
+    <button class="ok" id="right">✓ Correct</button>
+    <button class="no" id="wrong">✗ Not correct</button>
+  </div>
+  <div class="row">
+    <button class="alt" id="prev">← Back</button>
+    <button id="speak">🔊 Listen</button>
+    <button class="alt" id="next">Next →</button>
+  </div>
+  <div id="score"></div>
+  <div class="row">
+    <button class="alt" id="restart">↺ Start over</button>
+    <button class="alt" id="shuffle">🔀 Shuffle</button>
+    <button class="alt" id="dir">Start with: English</button>
+  </div>
+
+  <details>
+    <summary>Add / remove words</summary>
+    <form id="add">
+      <input name="en" placeholder="English word" required>
+      <input name="he" placeholder="עברית" required>
+      <input name="emoji" placeholder="Emoji (optional)">
+      <button>Add card</button>
+    </form>
+    <ul id="list"></ul>
+    <button class="alt" id="reset" style="margin-top:10px">Reset to starter words</button>
+  </details>
+
+<script>
+const STARTER = [
+  ["part of","חלק מ...",""],
+  ["delicious","טעים",""],
+  ["cousin","בן דוד / בת דודה",""],
+  ["factory","מפעל",""],
+  ["blog","בלוג",""],
+  ["upset","מבואס / נסער",""],
+  ["illegal","לא חוקי",""],
+  ["taste","טעם",""],
+  ["amazing","מדהים",""],
+  ["concert","קונצרט",""],
+  ["take it easy","תרגיע / קח את זה בקלות",""],
+  ["adjust","להתאים",""],
+  ["develop","לפתח",""],
+  ["downtown","מרכז העיר",""],
+  ["create","ליצור",""],
+  ["unpleasant","לא נעים",""],
+  ["cooking","בישול",""],
+  ["last","להימשך / אחרון",""],
+  ["festival","פסטיבל",""],
+  ["chance","הזדמנות / סיכוי",""],
+  ["exciting","מרגש",""],
+  ["discount","הנחה",""],
+  ["northern","צפוני",""],
+  ["traditional","מסורתי",""],
+  ["land","אדמה / ארץ",""],
+  ["crowded","צפוף",""],
+  ["for sale","למכירה",""],
+  ["variety","מגוון",""],
+  ["adventure","הרפתקה",""],
+  ["business","עסק",""],
+  ["century","מאה (שנים)",""],
+  ["handbag","תיק יד",""],
+  ["to admire","להעריץ",""],
+  ["cause","לגרום",""],
+  ["click","ללחוץ / קליק",""],
+  ["download","להוריד",""],
+  ["gather","לאסוף / להתכנס",""],
+  ["treat","לפנק / להתייחס",""],
+  ["annual","שנתי",""],
+  ["dressed","לבוש",""],
+  ["kind","אדיב / סוג",""],
+  ["loud","רועש / חזק",""],
+  ["major","עיקרי / גדול",""],
+  ["valuable","יקר ערך",""],
+  ["entire","שלם / כולו",""],
+  ["excited","נרגש",""],
+  ["each other","זה את זה / אחד את השני",""],
+  ["finally","סוף סוף",""],
+  ["get together","להיפגש",""],
+  ["look around","להסתכל מסביב",""],
+  ["make sure","לוודא",""],
+  ["possibly","אפשרי / אולי",""],
+  ["quite","די / למדי",""],
+  ["right now","עכשיו / כרגע",""],
+  ["take care of","לטפל ב / לדאוג ל",""]
+].map(([en,he,emoji])=>({en,he,emoji}));
+
+const KEY = "ehCards.v2";
+let cards, i = 0, heFirst = false;
+let results = {};
+try { cards = JSON.parse(localStorage.getItem(KEY)); } catch {}
+if (!Array.isArray(cards) || !cards.length) cards = STARTER.slice();
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(cards)); } catch {} };
+
+const $ = id => document.getElementById(id);
+const cardEl = $("card");
+
+function render() {
+  if (!cards.length) { $("fWord").textContent = "No cards"; $("bWord").textContent = ""; $("count").textContent = ""; return; }
+  i = (i + cards.length) % cards.length;
+  const c = cards[i];
+  cardEl.style.transition = "none";
+  cardEl.classList.remove("flipped");
+  void cardEl.offsetWidth;
+  cardEl.style.transition = "";
+  $("fEmoji").textContent = $("bEmoji").textContent = c.emoji || "";
+  const f = $("fWord"), b = $("bWord");
+  f.textContent = heFirst ? c.he : c.en; f.style.direction = heFirst ? "rtl" : "ltr";
+  b.textContent = heFirst ? c.en : c.he; b.style.direction = heFirst ? "ltr" : "rtl";
+  $("count").textContent = `${i + 1} / ${cards.length}`;
+}
+function renderScore() {
+  const vals = Object.values(results), good = vals.filter(Boolean).length;
+  let t = `✅ ${good} correct · ❌ ${vals.length - good} not correct · out of ${cards.length}`;
+  if (cards.length && vals.length >= cards.length) t = `🎉 Done! ${good} / ${cards.length} correct`;
+  $("score").textContent = t;
+}
+function mark(ok) {
+  if (!cards.length) return;
+  results[cards[i].en] = ok;
+  i++; render(); renderScore();
+}
+function renderList() {
+  $("list").innerHTML = "";
+  cards.forEach((c, idx) => {
+    const li = document.createElement("li");
+    li.innerHTML = `<span>${c.emoji || ""} ${c.en} — <span dir="rtl">${c.he}</span></span>`;
+    const del = document.createElement("button"); del.textContent = "✕";
+    del.onclick = () => { delete results[cards[idx].en]; cards.splice(idx, 1); save(); renderList(); render(); renderScore(); };
+    li.appendChild(del); $("list").appendChild(li);
+  });
+}
+function speak() {
+  const c = cards[i]; if (!c || !window.speechSynthesis) return;
+  const u = new SpeechSynthesisUtterance(c.en); u.lang = "en-US"; u.rate = .8;
+  speechSynthesis.cancel(); speechSynthesis.speak(u);
+}
+
+$("scene").onclick = () => cardEl.classList.toggle("flipped");
+$("next").onclick = () => { i++; render(); };
+$("prev").onclick = () => { i--; render(); };
+$("speak").onclick = speak;
+$("right").onclick = () => mark(true);
+$("wrong").onclick = () => mark(false);
+$("restart").onclick = () => { results = {}; i = 0; render(); renderScore(); };
+$("shuffle").onclick = () => {
+  for (let k = cards.length - 1; k > 0; k--) { const j = Math.floor(Math.random() * (k + 1)); [cards[k], cards[j]] = [cards[j], cards[k]]; }
+  i = 0; render(); renderList();
+};
+$("dir").onclick = () => { heFirst = !heFirst; $("dir").textContent = "Start with: " + (heFirst ? "עברית" : "English"); render(); };
+$("add").onsubmit = e => {
+  e.preventDefault();
+  const f = new FormData(e.target);
+  cards.push({ en: f.get("en").trim(), he: f.get("he").trim(), emoji: f.get("emoji").trim() });
+  save(); e.target.reset(); i = cards.length - 1; render(); renderList(); renderScore();
+};
+$("reset").onclick = () => { if (confirm("Replace all cards with the starter set?")) { cards = STARTER.slice(); i = 0; results = {}; save(); render(); renderList(); renderScore(); } };
+document.addEventListener("keydown", e => {
+  if (e.target.tagName === "INPUT") return;
+  if (e.key === "ArrowRight") $("next").click();
+  if (e.key === "ArrowLeft") $("prev").click();
+  if (e.key === " ") { e.preventDefault(); $("scene").click(); }
+});
+
+render(); renderList(); renderScore();
+</script>
+</body>
+</html>
