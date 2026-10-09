@@ -120,6 +120,8 @@ const STARTER = [
   ["take care of","לטפל ב / לדאוג ל",""]
 ].map(([en,he,emoji])=>({en,he,emoji}));
 
+let cards = STARTER.slice(), i = 0, heFirst = false;
+let results = {};
 
 const $ = id => document.getElementById(id);
 const cardEl = $("card");
