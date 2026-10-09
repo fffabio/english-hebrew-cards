@@ -31,14 +31,6 @@
   button.no { background:#d62828; }
   #score { font-size:1.2rem; font-weight:700; }
   button.alt { background:#fff; color:var(--ink); border:2px solid var(--ink); }
-  details { width:min(90vw,420px); background:#fff; border-radius:12px; padding:10px 14px; }
-  summary { cursor:pointer; font-weight:600; }
-  form { display:flex; flex-direction:column; gap:8px; margin-top:10px; }
-  input { font:inherit; padding:8px; border:1px solid #bbb; border-radius:8px; }
-  input[name=he] { direction:rtl; }
-  ul { padding:0; margin:10px 0 0; list-style:none; max-height:180px; overflow:auto; }
-  li { display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid #eee; }
-  li button { padding:2px 8px; font-size:.8rem; }
 </style>
 </head>
 <body>
@@ -68,17 +60,6 @@
     <button class="alt" id="dir">Start with: English</button>
   </div>
 
-  <details>
-    <summary>Add / remove words</summary>
-    <form id="add">
-      <input name="en" placeholder="English word" required>
-      <input name="he" placeholder="עברית" required>
-      <input name="emoji" placeholder="Emoji (optional)">
-      <button>Add card</button>
-    </form>
-    <ul id="list"></ul>
-    <button class="alt" id="reset" style="margin-top:10px">Reset to starter words</button>
-  </details>
 
 <script>
 const STARTER = [
@@ -139,12 +120,6 @@ const STARTER = [
   ["take care of","לטפל ב / לדאוג ל",""]
 ].map(([en,he,emoji])=>({en,he,emoji}));
 
-const KEY = "ehCards.v2";
-let cards, i = 0, heFirst = false;
-let results = {};
-try { cards = JSON.parse(localStorage.getItem(KEY)); } catch {}
-if (!Array.isArray(cards) || !cards.length) cards = STARTER.slice();
-const save = () => { try { localStorage.setItem(KEY, JSON.stringify(cards)); } catch {} };
 
 const $ = id => document.getElementById(id);
 const cardEl = $("card");
@@ -174,16 +149,6 @@ function mark(ok) {
   results[cards[i].en] = ok;
   i++; render(); renderScore();
 }
-function renderList() {
-  $("list").innerHTML = "";
-  cards.forEach((c, idx) => {
-    const li = document.createElement("li");
-    li.innerHTML = `<span>${c.emoji || ""} ${c.en} — <span dir="rtl">${c.he}</span></span>`;
-    const del = document.createElement("button"); del.textContent = "✕";
-    del.onclick = () => { delete results[cards[idx].en]; cards.splice(idx, 1); save(); renderList(); render(); renderScore(); };
-    li.appendChild(del); $("list").appendChild(li);
-  });
-}
 function speak() {
   const c = cards[i]; if (!c || !window.speechSynthesis) return;
   const u = new SpeechSynthesisUtterance(c.en); u.lang = "en-US"; u.rate = .8;
@@ -199,16 +164,9 @@ $("wrong").onclick = () => mark(false);
 $("restart").onclick = () => { results = {}; i = 0; render(); renderScore(); };
 $("shuffle").onclick = () => {
   for (let k = cards.length - 1; k > 0; k--) { const j = Math.floor(Math.random() * (k + 1)); [cards[k], cards[j]] = [cards[j], cards[k]]; }
-  i = 0; render(); renderList();
+  i = 0; render();
 };
 $("dir").onclick = () => { heFirst = !heFirst; $("dir").textContent = "Start with: " + (heFirst ? "עברית" : "English"); render(); };
-$("add").onsubmit = e => {
-  e.preventDefault();
-  const f = new FormData(e.target);
-  cards.push({ en: f.get("en").trim(), he: f.get("he").trim(), emoji: f.get("emoji").trim() });
-  save(); e.target.reset(); i = cards.length - 1; render(); renderList(); renderScore();
-};
-$("reset").onclick = () => { if (confirm("Replace all cards with the starter set?")) { cards = STARTER.slice(); i = 0; results = {}; save(); render(); renderList(); renderScore(); } };
 document.addEventListener("keydown", e => {
   if (e.target.tagName === "INPUT") return;
   if (e.key === "ArrowRight") $("next").click();
@@ -216,7 +174,7 @@ document.addEventListener("keydown", e => {
   if (e.key === " ") { e.preventDefault(); $("scene").click(); }
 });
 
-render(); renderList(); renderScore();
+render(); renderScore();
 </script>
 </body>
 </html>
