@@ -28,6 +28,12 @@
     --sun:#c99a2e; --sky:#3f7f99; --pink:#ff6b8b; --ok:#4cc46d; --no:#ff6060;
     --ok-bg:#1f3a28; --no-bg:#432326; --line:#f3efe4; color-scheme: dark;
   }
+  :root.white {
+    --bg:#ffffff; --paper:#ffffff; --ink:#2b2b3a; --soft:#6b6b7d;
+    --sun:#ffd166; --sky:#8ecae6; --pink:#ef476f; --ok:#2a9d4a; --no:#d62828;
+    --ok-bg:#dff3e4; --no-bg:#fbe0e0; --line:#2b2b3a; color-scheme: light;
+  }
+  .bgtoggle { margin-top:10px; font:inherit; font-size:.9rem; padding:6px 14px; border-radius:999px; border:2px solid var(--line); background:var(--paper); color:var(--ink); cursor:pointer; }
   html { scroll-padding-top:env(safe-area-inset-top,0px); }
   *,*::before,*::after { box-sizing:border-box; }
   body { margin:0; background:var(--bg); color:var(--ink);
@@ -115,6 +121,7 @@
     <h1>Noa’s blog</h1>
     <p>9 new words, present simple, present progressive, and one short text</p>
     <p class="he">כ-35 דקות. עובדים לפי הסדר: מילים, דקדוק, קריאה.</p>
+    <button class="bgtoggle" id="bgToggle">⬜ White background</button>
   </header>
 
   <!-- 1. WORDS -->
@@ -186,6 +193,12 @@
 </div>
 
 <script>
+const bgBtn=document.getElementById("bgToggle");
+function setWhite(on){ document.documentElement.classList.toggle("white",on); bgBtn.textContent=on?"🎨 Original colors":"⬜ White background"; try{ localStorage.setItem("bg-white",on?"1":"0"); }catch(e){} }
+let startWhite=false; try{ startWhite=localStorage.getItem("bg-white")==="1"; }catch(e){}
+setWhite(startWhite);
+bgBtn.onclick=()=>setWhite(!document.documentElement.classList.contains("white"));
+
 const WORDS = [
   ["part of","חלק מ..."],["delicious","טעים"],["cousin","בן דוד / בת דודה"],
   ["factory","מפעל"],["blog","בלוג"],["upset","מבואס / נסער"],
