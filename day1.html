@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Day 1 – English practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#fff7e6; --paper:#ffffff; --ink:#2b2b3a; --soft:#6b6b7d;
+    --sun:#ffd166; --sky:#8ecae6; --pink:#ef476f; --ok:#2a9d4a; --no:#d62828;
+    --ok-bg:#dff3e4; --no-bg:#fbe0e0; --line:#2b2b3a;
+    color-scheme: light;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:#1d1b26; --paper:#2a2836; --ink:#f3efe4; --soft:#b5b1c4;
+      --sun:#c99a2e; --sky:#3f7f99; --pink:#ff6b8b; --ok:#4cc46d; --no:#ff6060;
+      --ok-bg:#1f3a28; --no-bg:#432326; --line:#f3efe4; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg:#1d1b26; --paper:#2a2836; --ink:#f3efe4; --soft:#b5b1c4;
+    --sun:#c99a2e; --sky:#3f7f99; --pink:#ff6b8b; --ok:#4cc46d; --no:#ff6060;
+    --ok-bg:#1f3a28; --no-bg:#432326; --line:#f3efe4; color-scheme: dark;
+  }
+  html { scroll-padding-top:env(safe-area-inset-top,0px); }
+  *,*::before,*::after { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+         font-family:"Rubik",system-ui,-apple-system,"Segoe UI",Arial,sans-serif; font-size:17px; line-height:1.5; }
+  .wrap { max-width:640px; margin:0 auto; padding:20px 16px 60px; }
+  h1,h2 { font-family:"Fredoka","Rubik",system-ui,sans-serif; margin:0; line-height:1.15; }
+  header { text-align:center; padding:12px 0 8px; }
+  .day { display:inline-block; background:var(--pink); color:#fff; font-family:"Fredoka",sans-serif; font-weight:700;
+         font-size:1.1rem; padding:6px 18px; border-radius:999px; transform:rotate(-3deg); }
+  header h1 { font-size:2.2rem; margin-top:10px; }
+  header p { color:var(--soft); margin:6px 0 0; }
+  .he { direction:rtl; unicode-bidi:isolate; }
+
+  section { margin-top:34px; }
+  .step { display:flex; align-items:center; gap:12px; margin-bottom:6px; }
+  .num { flex:none; width:44px; height:44px; border-radius:50%; background:var(--sun); color:#2b2b3a; display:grid; place-items:center;
+         font-family:"Fredoka",sans-serif; font-weight:700; font-size:1.4rem; border:3px solid var(--line); }
+  h2 { font-size:1.6rem; }
+  .task { color:var(--soft); margin:4px 0 14px; }
+  .task .he { display:block; }
+
+  /* words */
+  .tiles { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:10px; }
+  .tile { background:var(--paper); border:3px solid var(--line); border-radius:18px; padding:12px 12px 10px; }
+  .tile .en { font-family:"Fredoka",sans-serif; font-weight:700; font-size:1.35rem; display:flex; justify-content:space-between; align-items:center; gap:6px; }
+  .say { border:0; background:transparent; font-size:1.2rem; cursor:pointer; padding:4px; border-radius:8px; color:inherit; }
+  .reveal { margin-top:6px; width:100%; font:inherit; font-size:1rem; padding:8px; border-radius:10px; cursor:pointer;
+            border:2px dashed var(--soft); background:transparent; color:var(--soft); }
+  .reveal.shown { border:2px solid transparent; background:var(--sky); color:#1a1a26; font-weight:500; font-size:1.15rem; }
+  .tile textarea { margin-top:8px; width:100%; font:inherit; font-size:.95rem; padding:8px; border-radius:10px;
+                   border:2px solid var(--soft); background:var(--bg); color:var(--ink); resize:vertical; min-height:56px; }
+
+  .chk { margin-top:6px; font:inherit; font-size:.9rem; padding:6px 12px; border-radius:10px; border:2px solid var(--line); background:var(--paper); color:var(--ink); cursor:pointer; }
+  .sfb { font-size:.9rem; margin-top:4px; font-weight:500; }
+  .sfb.good { color:var(--ok); } .sfb.bad { color:var(--no); }
+  .verb { color:var(--soft); font-style:italic; }
+
+  /* grammar */
+  .rule { background:var(--sky); color:#1a1a26; border-radius:18px; padding:14px 16px; border:3px solid var(--line); }
+  .rule table { width:100%; border-collapse:collapse; font-size:1.05rem; }
+  .rule td { padding:4px 6px; }
+  .rule td:first-child { font-weight:700; white-space:nowrap; }
+  .rule b.s { color:#b0002d; font-size:1.2em; }
+  .rule .he { margin-top:8px; font-size:.95rem; }
+  ol.qs { list-style:none; padding:0; margin:16px 0 0; display:grid; gap:10px; }
+  .q { background:var(--paper); border:3px solid var(--line); border-radius:16px; padding:12px 14px; }
+  .q.right { background:var(--ok-bg); border-color:var(--ok); }
+  .q.wrong { background:var(--no-bg); border-color:var(--no); }
+  .q p { margin:0 0 8px; }
+  .gap { display:inline-block; min-width:70px; border-bottom:3px solid var(--pink); text-align:center; font-weight:700; }
+  .opts { display:flex; flex-wrap:wrap; gap:8px; }
+  .opt { font:inherit; padding:9px 16px; border-radius:12px; border:2px solid var(--line); background:var(--bg); color:var(--ink); cursor:pointer; }
+  .opt.picked { background:var(--sun); color:#1a1a26; font-weight:700; }
+  .q.right .opt.picked { background:var(--ok); color:#fff; border-color:var(--ok); }
+  .q.wrong .opt.picked { background:var(--no); color:#fff; border-color:var(--no); }
+  .fb { margin-top:8px; font-size:.95rem; font-weight:500; }
+  .q.right .fb { color:var(--ok); } .q.wrong .fb { color:var(--no); }
+  .q input[type=text], .q textarea { width:100%; font:inherit; padding:9px 10px; border-radius:10px; border:2px solid var(--line);
+                   background:var(--bg); color:var(--ink); }
+  .q textarea { min-height:70px; resize:vertical; }
+
+  /* reading */
+  .story { background:var(--paper); border:3px solid var(--line); border-radius:18px; padding:18px 20px; position:relative; }
+  .story h3 { font-family:"Fredoka",sans-serif; font-size:1.4rem; margin:0 0 8px; }
+  .story p { margin:0 0 10px; line-height:1.7; }
+  .story p:last-child { margin-bottom:0; }
+  .story mark { background:var(--sun); color:#1a1a26; padding:0 3px; border-radius:4px; }
+  .model { margin-top:8px; padding:8px 10px; border-left:4px solid var(--ok); background:var(--ok-bg); border-radius:6px; font-size:.95rem; display:none; }
+  .model.on { display:block; }
+
+  .check { display:block; width:100%; margin-top:16px; font-family:"Fredoka",sans-serif; font-weight:700; font-size:1.3rem;
+           padding:16px; border:0; border-radius:16px; background:var(--pink); color:#fff; cursor:pointer; }
+  .score { text-align:center; font-family:"Fredoka",sans-serif; font-size:1.3rem; margin-top:10px; min-height:1.5em; }
+
+  footer { margin-top:40px; text-align:center; }
+  #total { font-family:"Fredoka",sans-serif; font-size:1.5rem; }
+  button:focus-visible, textarea:focus-visible, input:focus-visible { outline:3px solid var(--pink); outline-offset:2px; }
+  @media (prefers-reduced-motion: reduce) { * { transition:none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="day">Day 1</span>
+    <h1>Noa’s blog</h1>
+    <p>9 new words, present simple, present progressive, and one short text</p>
+    <p class="he">כ-35 דקות. עובדים לפי הסדר: מילים, דקדוק, קריאה.</p>
+  </header>
+
+  <!-- 1. WORDS -->
+  <section>
+    <div class="step"><span class="num">1</span><h2>New words</h2></div>
+    <p class="task">Say the word, try to remember the Hebrew, then tap to check. Write one sentence with each word.
+      <span class="he">תגידי את המילה, נסי לזכור את התרגום, ואז לחצי לבדוק. כתבי משפט אחד עם כל מילה.</span></p>
+    <div class="tiles" id="tiles"></div>
+  </section>
+
+  <!-- 2. GRAMMAR -->
+  <section>
+    <div class="step"><span class="num">2</span><h2>Present simple: he / she / it + s</h2></div>
+    <div class="rule">
+      <table>
+        <tr><td>I / you / we / they</td><td>play, write, live</td></tr>
+        <tr><td>he / she / it</td><td>play<b class="s">s</b>, write<b class="s">s</b>, live<b class="s">s</b></td></tr>
+      </table>
+      <div class="he">כשהנושא הוא הוא / היא / זה (או שם של אדם אחד, כמו Noa או my cousin) מוסיפים s לפועל.</div>
+    </div>
+    <p class="task">1–10: choose the correct verb. 11–18: write the verb in brackets in the right form. <span class="he">1–10: בחרי את הצורה הנכונה. 11–18: כתבי את הפועל שבסוגריים בצורה הנכונה.</span></p>
+    <ol class="qs" id="gram"></ol>
+    <button class="check" id="checkGram">Check my answers</button>
+    <div class="score" id="gramScore"></div>
+  </section>
+
+  <!-- 3. PRESENT PROGRESSIVE -->
+  <section>
+    <div class="step"><span class="num">3</span><h2>Present progressive: am / is / are + -ing</h2></div>
+    <div class="rule">
+      <table>
+        <tr><td>I</td><td><b class="s">am</b> read<b class="s">ing</b></td></tr>
+        <tr><td>he / she / it</td><td><b class="s">is</b> read<b class="s">ing</b></td></tr>
+        <tr><td>you / we / they</td><td><b class="s">are</b> read<b class="s">ing</b></td></tr>
+        <tr><td>Spelling</td><td>make → making, swim → swimming, play → playing</td></tr>
+        <tr><td>Signal words</td><td>now, right now, at the moment, Look!, Listen!</td></tr>
+      </table>
+      <div class="he">Present progressive = משהו שקורה עכשיו, ברגע זה. Present simple = משהו שקורה תמיד / כל יום / בדרך כלל.</div>
+    </div>
+    <p class="task">1–6: choose am, is or are. 7–10: present simple or present progressive? 11–16: write the verb in brackets with am/is/are + -ing.
+      <span class="he">1–6: בחרי am, is או are. 7–10: הווה פשוט או הווה מתמשך? 11–16: כתבי את הפועל שבסוגריים בהווה מתמשך.</span></p>
+    <ol class="qs" id="prog"></ol>
+    <button class="check" id="checkProg">Check my answers</button>
+    <div class="score" id="progScore"></div>
+  </section>
+
+  <!-- 4. READING -->
+  <section>
+    <div class="step"><span class="num">4</span><h2>Read and answer</h2></div>
+    <p class="task">Read the text, then answer the questions. The new words are in yellow.
+      <span class="he">קראי את הקטע וענו על השאלות. המילים החדשות מסומנות בצהוב.</span></p>
+    <article class="story">
+      <h3>My Cousin’s Blog</h3>
+      <p>My <mark>cousin</mark> Noa is fourteen. She lives in a small town in the north. Her father works in a chocolate <mark>factory</mark>, and Noa writes a <mark>blog</mark> about food. Every week she tries a new dish and writes about its <mark>taste</mark>. Her readers love the blog. They say her photos are <mark>amazing</mark>.</p>
+      <p>Every Friday, Noa’s father brings home chocolate from the factory. It is <mark>delicious</mark>! But Noa says that cooking is <mark>part of</mark> the fun, so she usually makes her own desserts.</p>
+      <p>Noa’s best friend, Maya, loves cooking too. She comes to Noa’s house every Tuesday after school, and the two girls make cookies together. Maya takes the photos, and Noa writes the posts. Their cookies taste great, and the blog gets more readers every month.</p>
+      <p>Sometimes Noa gets <mark>upset</mark>. Some people copy her photos and put them on their websites without asking. That is <mark>illegal</mark>! Her father tells her to write to them, and they usually take the photos down.</p>
+      <p>I visit Noa every summer. We cook together, and I help her with the blog.</p>
+      <p>Right now it is Friday afternoon, and I am sitting in Noa’s kitchen. Noa is mixing chocolate and sugar, and Maya is taking photos. I am writing this post for the blog. The kitchen smells delicious!</p>
+    </article>
+    <ol class="qs" id="read"></ol>
+    <button class="check" id="checkRead">Check my answers</button>
+    <div class="score" id="readScore"></div>
+  </section>
+
+  <footer>
+    <div id="total"></div>
+  </footer>
+</div>
+
+<script>
+const WORDS = [
+  ["part of","חלק מ..."],["delicious","טעים"],["cousin","בן דוד / בת דודה"],
+  ["factory","מפעל"],["blog","בלוג"],["upset","מבואס / נסער"],
+  ["illegal","לא חוקי"],["taste","טעם"],["amazing","מדהים"]
+];
+
+function speak(t){
+  try { speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(t); u.lang="en-US"; u.rate=.85; speechSynthesis.speak(u); } catch(e){}
+}
+
+function checkSentence(s,en){
+  const t=s.trim(); if(!t) return {ok:false,msg:"Write a sentence first."};
+  const w=en.replace(/^to /,"").toLowerCase();
+  if(!t.toLowerCase().includes(w)) return {ok:false,msg:`Use the word “${w}” in your sentence.`};
+  if(t.split(/\s+/).length<4) return {ok:false,msg:"Make it longer: at least 4 words."};
+  if(!/^[A-Z]/.test(t)) return {ok:false,msg:"Start with a capital letter."};
+  if(!/[.!?]$/.test(t)) return {ok:false,msg:"End with a full stop (.), ? or !"};
+  return {ok:true,msg:"Looks good! Read it aloud to check it makes sense."};
+}
+/* 1. words */
+const tiles=document.getElementById("tiles");
+WORDS.forEach(([en,he])=>{
+  const d=document.createElement("div"); d.className="tile";
+  d.innerHTML=`<div class="en"><span>${en}</span><button class="say" aria-label="Listen to ${en}">🔊</button></div>
+    <button class="reveal">Tap for Hebrew</button>
+    <textarea placeholder="My sentence with “${en}”…" aria-label="Sentence with ${en}"></textarea>
+    <button class="chk">Check my sentence</button><div class="sfb"></div>`;
+  d.querySelector(".say").onclick=()=>speak(en);
+  const ta=d.querySelector("textarea"), sfb=d.querySelector(".sfb"), key="day1-sent-"+en;
+  try{ ta.value=localStorage.getItem(key)||""; }catch(e){}
+  ta.oninput=()=>{ try{ localStorage.setItem(key,ta.value); }catch(e){} sfb.textContent=""; sfb.className="sfb"; };
+  d.querySelector(".chk").onclick=()=>{ const r=checkSentence(ta.value,en); sfb.textContent=r.msg; sfb.className="sfb "+(r.ok?"good":"bad"); };
+  const r=d.querySelector(".reveal");
+  r.onclick=()=>{ const on=r.classList.toggle("shown"); r.textContent=on?he:"Tap for Hebrew"; r.classList.toggle("he",on); };
+  tiles.appendChild(d);
+});
+
+/* 2. grammar */
+const GRAM=[
+  ["My cousin","in Haifa.",["live","lives"],1],
+  ["We","pizza on Fridays.",["eat","eats"],0],
+  ["Dan","a blog about football.",["write","writes"],1],
+  ["The factory","chocolate.",["make","makes"],1],
+  ["I","the taste of lemons.",["love","loves"],0],
+  ["My parents","in a big factory.",["work","works"],0],
+  ["She","upset when her friends are late.",["get","gets"],1],
+  ["This cake","amazing!",["look","looks"],1],
+  ["You","my blog every day.",["read","reads"],0],
+  ["Tom and his cousin","football after school.",["play","plays"],0],
+  ["Noa","dinner on Saturdays.","cook","cooks","type"],
+  ["My cousins","near the beach.","live","live","type"],
+  ["The soup","delicious.","taste","tastes","type"],
+  ["I","in my blog every day.","write","write","type"],
+  ["My brother","upset when he loses a game.","get","gets","type"],
+  ["They","in a toy factory.","work","work","type"],
+  ["It","a lot in the north in winter.","rain","rains","type"],
+  ["We","amazing stories.","love","love","type"]
+];
+const gram=document.getElementById("gram"), gPick={};
+GRAM.forEach((g,i)=>{
+  const [a,b,opts,ans]=g;
+  const li=document.createElement("li"); li.className="q";
+  if(g[4]==="type"){
+    li.innerHTML=`<p>${i+1}. ${a} <span class="gap">____</span> ${b} <span class="verb">(${opts})</span></p><input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Answer ${i+1}"><div class="fb"></div>`;
+    li.querySelector("input").oninput=()=>{ li.className="q"; li.querySelector(".fb").textContent=""; };
+    gram.appendChild(li); return;
+  }
+  li.innerHTML=`<p>${i+1}. ${a} <span class="gap">____</span> ${b}</p><div class="opts"></div><div class="fb"></div>`;
+  const box=li.querySelector(".opts");
+  opts.forEach((o,k)=>{
+    const btn=document.createElement("button"); btn.className="opt"; btn.textContent=o;
+    btn.onclick=()=>{ gPick[i]=k; li.className="q"; li.querySelector(".fb").textContent="";
+      box.querySelectorAll(".opt").forEach(x=>x.classList.remove("picked")); btn.classList.add("picked");
+      li.querySelector(".gap").textContent=o; };
+    box.appendChild(btn);
+  });
+  gram.appendChild(li);
+});
+let gramScore=null, readScore=null;
+document.getElementById("checkGram").onclick=()=>{
+  let ok=0;
+  GRAM.forEach((g,i)=>{
+    const [a,,opts,ans]=g;
+    const li=gram.children[i], fb=li.querySelector(".fb");
+    if(g[4]==="type"){
+      const v=norm(li.querySelector("input").value);
+      if(!v){ li.className="q wrong"; fb.textContent="Write the verb."; return; }
+      if(v===ans){ ok++; li.className="q right"; fb.textContent="Correct!"; }
+      else { li.className="q wrong"; fb.textContent = ans!==opts ? `“${a}” is he/she/it, so add s: ${ans}.` : `“${a}” is I/you/we/they, so no s: ${ans}.`; }
+      return;
+    }
+    if(gPick[i]===undefined){ li.className="q wrong"; fb.textContent="Choose an answer."; return; }
+    if(gPick[i]===ans){ ok++; li.className="q right"; fb.textContent="Correct!"; }
+    else { li.className="q wrong";
+      fb.textContent = ans===1 ? `“${a}” is he/she/it, so add s: ${opts[1]}.` : `“${a}” is I/you/we/they, so no s: ${opts[0]}.`; }
+  });
+  gramScore=ok; document.getElementById("gramScore").textContent=`${ok} / ${GRAM.length}`; total();
+};
+
+/* 3. present progressive */
+const PROG=[
+  {s:"Look! Noa ___ baking a cake.", o:["am","is","are"], a:1},
+  {s:"I ___ writing my blog now.", o:["am","is","are"], a:0},
+  {s:"My cousins ___ playing in the garden.", o:["am","is","are"], a:2},
+  {s:"Listen! The baby ___ crying.", o:["am","is","are"], a:1},
+  {s:"We ___ eating dinner at the moment.", o:["am","is","are"], a:2},
+  {s:"Dad ___ working in the factory now.", o:["am","is","are"], a:1},
+  {s:"Noa ___ a new post every week.", o:["writes","is writing"], a:0},
+  {s:"Look! Noa ___ a new post now.", o:["writes","is writing"], a:1},
+  {s:"My father usually ___ at seven.", o:["gets up","is getting up"], a:0},
+  {s:"Shh! I ___ to music.", o:["listen","am listening"], a:1},
+  {s:"Maya ___ photos right now.", v:"take", a:"is taking"},
+  {s:"They ___ in the sea at the moment.", v:"swim", a:"are swimming"},
+  {s:"I ___ my homework now.", v:"do", a:"am doing"},
+  {s:"Look! The girls ___ cookies.", v:"make", a:"are making"},
+  {s:"Listen! Somebody ___ at the door.", v:"knock", a:"is knocking"},
+  {s:"We ___ a movie now.", v:"watch", a:"are watching"}
+];
+const PROG_HINT="now / at the moment / Look! → am, is, are + -ing. every day / usually → present simple.";
+const prog=document.getElementById("prog"), pPick={};
+const gapHtml=s=>s.replace("___",'<span class="gap">____</span>');
+PROG.forEach((it,i)=>{
+  const li=document.createElement("li"); li.className="q";
+  if(it.v){
+    li.innerHTML=`<p>${i+1}. ${gapHtml(it.s)} <span class="verb">(${it.v})</span></p><input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Answer ${i+1}"><div class="fb"></div>`;
+    li.querySelector("input").oninput=()=>{ li.className="q"; li.querySelector(".fb").textContent=""; };
+  } else {
+    li.innerHTML=`<p>${i+1}. ${gapHtml(it.s)}</p><div class="opts"></div><div class="fb"></div>`;
+    const box=li.querySelector(".opts");
+    it.o.forEach((o,k)=>{
+      const btn=document.createElement("button"); btn.className="opt"; btn.textContent=o;
+      btn.onclick=()=>{ pPick[i]=k; li.className="q"; li.querySelector(".fb").textContent="";
+        box.querySelectorAll(".opt").forEach(x=>x.classList.remove("picked")); btn.classList.add("picked");
+        li.querySelector(".gap").textContent=o; };
+      box.appendChild(btn);
+    });
+  }
+  prog.appendChild(li);
+});
+let progScore=null;
+const normV=s=>s.toLowerCase().replace(/’/g,"'").trim().replace(/^i'm\b/,"am").replace(/^(he|she|it)'s\b/,"is").replace(/^(we|you|they)'re\b/,"are").replace(/^'m\b/,"am").replace(/^'s\b/,"is").replace(/^'re\b/,"are").replace(/[^a-z ]/g," ").replace(/\s+/g," ").trim();
+document.getElementById("checkProg").onclick=()=>{
+  let ok=0;
+  PROG.forEach((it,i)=>{
+    const li=prog.children[i], fb=li.querySelector(".fb");
+    const ans = it.v ? it.a : it.o[it.a];
+    let good;
+    if(it.v){
+      const v=normV(li.querySelector("input").value);
+      if(!v){ li.className="q wrong"; fb.textContent="Write the verb."; return; }
+      good = v===it.a;
+    } else {
+      if(pPick[i]===undefined){ li.className="q wrong"; fb.textContent="Choose an answer."; return; }
+      good = pPick[i]===it.a;
+    }
+    if(good){ ok++; li.className="q right"; fb.textContent="Correct!"; }
+    else { li.className="q wrong"; fb.textContent=`Answer: ${ans}. ${PROG_HINT}`; }
+  });
+  progScore=ok; document.getElementById("progScore").textContent=`${ok} / ${PROG.length}`; total();
+};
+
+/* 4. reading */
+const norm=s=>s.toLowerCase().replace(/[^a-z ]/g,"").trim();
+const READ=[
+  {t:"tf", q:"Noa’s mother works in a chocolate factory.", a:false, why:"It’s her father who works in the factory."},
+  {t:"tf", q:"Noa writes about the taste of new dishes.", a:true, why:"“Every week she tries a new dish and writes about its taste.”"},
+  {t:"tf", q:"Maya writes the posts on the blog.", a:false, why:"Maya takes the photos, and Noa writes the posts."},
+  {t:"mc", q:"What does the writer do every summer?", o:["works in the factory","visits Noa","starts a blog","buys chocolate"], a:1, why:"“I visit Noa every summer.”"},
+  {t:"word", q:"Find a word in the text that means <span class=\"he\">טעים</span>.", a:["delicious"], why:"delicious"},
+  {t:"word", q:"Complete: Noa’s readers say her photos are ________.", a:["amazing"], why:"amazing"},
+  {t:"open", q:"Why does Noa sometimes get upset? Answer in a full sentence.",
+   model:"She gets upset because people copy her photos and put them on their websites without asking.",
+   keys:["copy","photo"]},
+  {t:"tf", q:"Right now, Maya is mixing chocolate and sugar.", a:false, why:"Noa is mixing chocolate and sugar. Maya is taking photos."},
+  {t:"word", q:"Complete: Right now, the writer is ________ in Noa’s kitchen.", a:["sitting"], why:"sitting"}
+];
+const read=document.getElementById("read"), rPick={};
+READ.forEach((it,i)=>{
+  const li=document.createElement("li"); li.className="q";
+  let body="";
+  if(it.t==="tf") body=`<div class="opts"><button class="opt" data-v="1">True</button><button class="opt" data-v="0">False</button></div>`;
+  if(it.t==="mc") body=`<div class="opts">${it.o.map((o,k)=>`<button class="opt" data-v="${k}">${String.fromCharCode(97+k)}) ${o}</button>`).join("")}</div>`;
+  if(it.t==="word") body=`<input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Answer ${i+1}">`;
+  if(it.t==="open") body=`<textarea aria-label="Answer ${i+1}"></textarea><div class="model"><b>Example answer:</b> ${it.model}</div>`;
+  li.innerHTML=`<p>${i+1}. ${it.q}</p>${body}<div class="fb"></div>`;
+  li.querySelectorAll(".opt").forEach(btn=>btn.onclick=()=>{
+    rPick[i]=+btn.dataset.v; li.className="q"; li.querySelector(".fb").textContent="";
+    li.querySelectorAll(".opt").forEach(x=>x.classList.remove("picked")); btn.classList.add("picked");
+  });
+  read.appendChild(li);
+});
+document.getElementById("checkRead").onclick=()=>{
+  let ok=0;
+  READ.forEach((it,i)=>{
+    const li=read.children[i], fb=li.querySelector(".fb"); let good=false, msg="";
+    if(it.t==="tf"){ if(rPick[i]===undefined){msg="Choose True or False.";} else { good=(rPick[i]===1)===it.a; msg=good?"Correct!":it.why; } }
+    if(it.t==="mc"){ if(rPick[i]===undefined){msg="Choose an answer.";} else { good=rPick[i]===it.a; msg=good?"Correct!":it.why; } }
+    if(it.t==="word"){ const v=norm(li.querySelector("input").value); good=it.a.includes(v); msg=good?"Correct!":(v?`The answer is: ${it.why}`:"Write your answer."); }
+    if(it.t==="open"){ const v=li.querySelector("textarea").value.toLowerCase();
+      good=it.keys.every(k=>v.includes(k)); li.querySelector(".model").classList.add("on");
+      msg = !v.trim() ? "Write your answer, then compare with the example." : good ? "Good! Compare with the example answer." : "Look at paragraph 4 again and compare with the example."; }
+    if(good) ok++;
+    li.className="q "+(good?"right":"wrong"); fb.textContent=msg;
+  });
+  readScore=ok; document.getElementById("readScore").textContent=`${ok} / ${READ.length}`; total();
+};
+
+function total(){
+  const el=document.getElementById("total");
+  if(gramScore===null||progScore===null||readScore===null){ el.textContent=""; return; }
+  const t=gramScore+progScore+readScore, max=GRAM.length+PROG.length+READ.length;
+  el.textContent = t===max ? `Day 1 done: ${t}/${max}. Perfect! 🎉` : `Day 1 done: ${t}/${max}. Fix the red ones and check again.`;
+}
+</script>
+</body>
+</html>
