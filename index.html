@@ -31,11 +31,23 @@
   button.no { background:#d62828; }
   #score { font-size:1.2rem; font-weight:700; }
   button.alt { background:#fff; color:var(--ink); border:2px solid var(--ink); }
+  .sets button.on { background:var(--ink); color:#fff; }
+  #onlyNo.on { background:#d62828; color:#fff; border-color:#d62828; }
+  .small { font-size:.85rem; opacity:.75; }
 </style>
 </head>
 <body>
   <h1>English ↔ עברית</h1>
   <div id="count"></div>
+  <div class="row sets" id="sets">
+    <button class="alt" data-set="all">All words</button>
+    <button class="alt" data-set="A">List A · 55</button>
+    <button class="alt" data-set="B">List B · 25</button>
+    <button class="alt" data-set="C">List C · 28</button>
+  </div>
+  <div class="row">
+    <button class="alt" id="onlyNo">Only words I don’t know</button>
+  </div>
 
   <div class="scene" id="scene" title="Tap to flip">
     <div class="card" id="card">
@@ -58,6 +70,7 @@
     <button class="alt" id="restart">↺ Start over</button>
     <button class="alt" id="shuffle">🔀 Shuffle</button>
     <button class="alt" id="dir">Start with: English</button>
+    <button class="alt small" id="forget">Clear my ✓/✗ marks</button>
   </div>
 
 
@@ -95,7 +108,7 @@ const STARTER = [
   ["business","עסק",""],
   ["country","מדינה",""],
   ["handbag","תיק יד",""],
-  ["to admire","להעריץ",""],
+  ["to admire","להתפעל / להעריך / להעריץ",""],
   ["cause","לגרום",""],
   ["click","ללחוץ / קליק",""],
   ["download","להוריד",""],
@@ -114,20 +127,90 @@ const STARTER = [
   ["get together","להיפגש",""],
   ["look around","להסתכל מסביב",""],
   ["make sure","לוודא",""],
-  ["possibly","אפשרי / אולי",""],
+  ["possibly","אולי / ייתכן",""],
   ["quite","די / למדי",""],
   ["right now","עכשיו / כרגע",""],
-  ["take care of","לטפל ב / לדאוג ל",""]
-].map(([en,he,emoji])=>({en,he,emoji}));
+  ["take care of","לטפל ב / לדאוג ל",""],
+  ["capital","עיר בירה","","B"],
+  ["carrot","גזר","","B"],
+  ["engineer","מהנדס","","B"],
+  ["expert","מומחה","","B"],
+  ["insect","חרק","","B"],
+  ["invention","המצאה","","B"],
+  ["iron","ברזל / מגהץ","","B"],
+  ["secret","סוד","","B"],
+  ["sense","חוש / היגיון","","B"],
+  ["source","מקור","","B"],
+  ["technology","טכנולוגיה","","B"],
+  ["assume","להניח","","B"],
+  ["breathe","לנשום","","B"],
+  ["design","לעצב / לתכנן","","B"],
+  ["surprise","להפתיע","","B"],
+  ["blind","עיוור","","B"],
+  ["enormous","עצום / ענק","","B"],
+  ["incorrect","לא נכון / שגוי","","B"],
+  ["natural","טבעי","","B"],
+  ["be unable to","לא מסוגל ל...","","B"],
+  ["get back","לחזור / לקבל בחזרה","","B"],
+  ["in fact","למעשה / בעצם","","B"],
+  ["originally","במקור","","B"],
+  ["so","אז / לכן / כל כך","","B"],
+  ["such as","כמו / למשל","","B"],
+  ["advertisement","פרסומת","","C"],
+  ["bill","חשבון (לתשלום)","","C"],
+  ["contract","חוזה","","C"],
+  ["deal","עסקה","","C"],
+  ["experience","ניסיון / חוויה","","C"],
+  ["fee","תשלום / עמלה","","C"],
+  ["literature","ספרות","","C"],
+  ["tear","דמעה","","C"],
+  ["website","אתר אינטרנט","","C"],
+  ["agree","להסכים","","C"],
+  ["charge","לגבות (כסף) / להטעין","","C"],
+  ["convince","לשכנע","","C"],
+  ["lie","לשקר / לשכב","","C"],
+  ["offer","להציע","","C"],
+  ["refuse","לסרב","","C"],
+  ["shop","לעשות קניות","","C"],
+  ["clear","ברור","","C"],
+  ["digital","דיגיטלי","","C"],
+  ["essential","חיוני","","C"],
+  ["lucky","בר מזל","","C"],
+  ["positive","חיובי","","C"],
+  ["be wrong","לטעות","","C"],
+  ["Congratulations!","מזל טוב! / ברכות!","","C"],
+  ["credit (card)","(כרטיס) אשראי","","C"],
+  ["despite","למרות","","C"],
+  ["miss a chance","לפספס הזדמנות","","C"],
+  ["plenty of","הרבה / שפע של","","C"],
+  ["somehow","איכשהו","","C"]
+].map(([en,he,emoji,set])=>({en,he,emoji,set:set||"A"}));
 
-let cards = STARTER.slice(), i = 0, heFirst = false;
+let cards = [], i = 0, heFirst = false;
 let results = {};
+let curSet = "all", onlyNo = false;
+let status = {}; try { status = JSON.parse(localStorage.getItem("cardStatus") || "{}"); } catch(e) {}
+try { const v = JSON.parse(localStorage.getItem("cardView") || "{}"); if (v.curSet) curSet = v.curSet; onlyNo = !!v.onlyNo; } catch(e) {}
+function saveStatus(){ try { localStorage.setItem("cardStatus", JSON.stringify(status)); } catch(e) {} }
+function pool(){ return STARTER.filter(c => curSet === "all" || c.set === curSet); }
+function updateOnly(){
+  const n = pool().filter(c => status[c.en] === false).length, o = document.getElementById("onlyNo");
+  o.classList.toggle("on", onlyNo);
+  o.textContent = onlyNo ? `Only ✗ words (${n}) · tap to show all` : `Only words I don’t know (${n})`;
+}
+function rebuild(){
+  cards = onlyNo ? pool().filter(c => status[c.en] === false) : pool();
+  i = 0; results = {};
+  document.querySelectorAll("#sets button").forEach(b => b.classList.toggle("on", b.dataset.set === curSet));
+  updateOnly();
+  try { localStorage.setItem("cardView", JSON.stringify({curSet, onlyNo})); } catch(e) {}
+}
 
 const $ = id => document.getElementById(id);
 const cardEl = $("card");
 
 function render() {
-  if (!cards.length) { $("fWord").textContent = "No cards"; $("bWord").textContent = ""; $("count").textContent = ""; return; }
+  if (!cards.length) { $("fWord").textContent = onlyNo ? "No ✗ words 🎉" : "No cards"; $("bWord").textContent = ""; $("count").textContent = ""; return; }
   i = (i + cards.length) % cards.length;
   const c = cards[i];
   cardEl.style.transition = "none";
@@ -148,7 +231,7 @@ function renderScore() {
 }
 function mark(ok) {
   if (!cards.length) return;
-  results[cards[i].en] = ok;
+  results[cards[i].en] = ok; status[cards[i].en] = ok; saveStatus(); updateOnly();
   i++; render(); renderScore();
 }
 function speak() {
@@ -176,6 +259,10 @@ document.addEventListener("keydown", e => {
   if (e.key === " ") { e.preventDefault(); $("scene").click(); }
 });
 
+document.querySelectorAll("#sets button").forEach(b => b.onclick = () => { curSet = b.dataset.set; rebuild(); render(); renderScore(); });
+$("onlyNo").onclick = () => { onlyNo = !onlyNo; rebuild(); render(); renderScore(); };
+$("forget").onclick = () => { if (!confirm("Clear all ✓/✗ marks?")) return; status = {}; saveStatus(); rebuild(); render(); renderScore(); };
+rebuild();
 render(); renderScore();
 </script>
 </body>
