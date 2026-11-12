@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Day 3 – English practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#fff7e6; --paper:#ffffff; --ink:#2b2b3a; --soft:#6b6b7d;
+    --sun:#ffd166; --sky:#8ecae6; --pink:#ef476f; --ok:#2a9d4a; --no:#d62828;
+    --ok-bg:#dff3e4; --no-bg:#fbe0e0; --line:#2b2b3a;
+    color-scheme: light;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:#1d1b26; --paper:#2a2836; --ink:#f3efe4; --soft:#b5b1c4;
+      --sun:#c99a2e; --sky:#3f7f99; --pink:#ff6b8b; --ok:#4cc46d; --no:#ff6060;
+      --ok-bg:#1f3a28; --no-bg:#432326; --line:#f3efe4; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg:#1d1b26; --paper:#2a2836; --ink:#f3efe4; --soft:#b5b1c4;
+    --sun:#c99a2e; --sky:#3f7f99; --pink:#ff6b8b; --ok:#4cc46d; --no:#ff6060;
+    --ok-bg:#1f3a28; --no-bg:#432326; --line:#f3efe4; color-scheme: dark;
+  }
+  :root.white {
+    --bg:#ffffff; --paper:#ffffff; --ink:#2b2b3a; --soft:#6b6b7d;
+    --sun:#ffd166; --sky:#8ecae6; --pink:#ef476f; --ok:#2a9d4a; --no:#d62828;
+    --ok-bg:#dff3e4; --no-bg:#fbe0e0; --line:#2b2b3a; color-scheme: light;
+  }
+  .bgtoggle { margin-top:10px; font:inherit; font-size:.9rem; padding:6px 14px; border-radius:999px; border:2px solid var(--line); background:var(--paper); color:var(--ink); cursor:pointer; }
+  html { scroll-padding-top:env(safe-area-inset-top,0px); }
+  *,*::before,*::after { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+         font-family:"Rubik",system-ui,-apple-system,"Segoe UI",Arial,sans-serif; font-size:17px; line-height:1.5; }
+  .wrap { max-width:640px; margin:0 auto; padding:20px 16px 60px; }
+  h1,h2 { font-family:"Fredoka","Rubik",system-ui,sans-serif; margin:0; line-height:1.15; }
+  header { text-align:center; padding:12px 0 8px; }
+  .day { display:inline-block; background:var(--pink); color:#fff; font-family:"Fredoka",sans-serif; font-weight:700;
+         font-size:1.1rem; padding:6px 18px; border-radius:999px; transform:rotate(-3deg); }
+  header h1 { font-size:2.2rem; margin-top:10px; }
+  header p { color:var(--soft); margin:6px 0 0; }
+  .he { direction:rtl; unicode-bidi:isolate; }
+
+  section { margin-top:34px; }
+  .step { display:flex; align-items:center; gap:12px; margin-bottom:6px; }
+  .num { flex:none; width:44px; height:44px; border-radius:50%; background:var(--sun); color:#2b2b3a; display:grid; place-items:center;
+         font-family:"Fredoka",sans-serif; font-weight:700; font-size:1.4rem; border:3px solid var(--line); }
+  h2 { font-size:1.6rem; }
+  .task { color:var(--soft); margin:4px 0 14px; }
+  .task .he { display:block; }
+
+  /* words */
+  .tiles { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:10px; }
+  .tile { background:var(--paper); border:3px solid var(--line); border-radius:18px; padding:12px 12px 10px; }
+  .tile .en { font-family:"Fredoka",sans-serif; font-weight:700; font-size:1.35rem; display:flex; justify-content:space-between; align-items:center; gap:6px; }
+  .say { border:0; background:transparent; font-size:1.2rem; cursor:pointer; padding:4px; border-radius:8px; color:inherit; }
+  .reveal { margin-top:6px; width:100%; font:inherit; font-size:1rem; padding:8px; border-radius:10px; cursor:pointer;
+            border:2px dashed var(--soft); background:transparent; color:var(--soft); }
+  .reveal.shown { border:2px solid transparent; background:var(--sky); color:#1a1a26; font-weight:500; font-size:1.15rem; }
+  .tile textarea { margin-top:8px; width:100%; font:inherit; font-size:.95rem; padding:8px; border-radius:10px;
+                   border:2px solid var(--soft); background:var(--bg); color:var(--ink); resize:vertical; min-height:56px; }
+
+  .chk { margin-top:6px; font:inherit; font-size:.9rem; padding:6px 12px; border-radius:10px; border:2px solid var(--line); background:var(--paper); color:var(--ink); cursor:pointer; }
+  .sfb { font-size:.9rem; margin-top:4px; font-weight:500; }
+  .sfb.good { color:var(--ok); } .sfb.bad { color:var(--no); }
+  .verb { color:var(--soft); font-style:italic; }
+
+  /* grammar */
+  .rule { background:var(--sky); color:#1a1a26; border-radius:18px; padding:14px 16px; border:3px solid var(--line); }
+  .rule table { width:100%; border-collapse:collapse; font-size:1.05rem; }
+  .rule td { padding:4px 6px; }
+  .rule td:first-child { font-weight:700; white-space:nowrap; }
+  .rule b.s { color:#b0002d; font-size:1.2em; }
+  .rule .he { margin-top:8px; font-size:.95rem; }
+  ol.qs { list-style:none; padding:0; margin:16px 0 0; display:grid; gap:10px; }
+  .q { background:var(--paper); border:3px solid var(--line); border-radius:16px; padding:12px 14px; }
+  .q.right { background:var(--ok-bg); border-color:var(--ok); }
+  .q.wrong { background:var(--no-bg); border-color:var(--no); }
+  .q p { margin:0 0 8px; }
+  .gap { display:inline-block; min-width:70px; border-bottom:3px solid var(--pink); text-align:center; font-weight:700; }
+  .opts { display:flex; flex-wrap:wrap; gap:8px; }
+  .opt { font:inherit; padding:9px 16px; border-radius:12px; border:2px solid var(--line); background:var(--bg); color:var(--ink); cursor:pointer; }
+  .opt.picked { background:var(--sun); color:#1a1a26; font-weight:700; }
+  .q.right .opt.picked { background:var(--ok); color:#fff; border-color:var(--ok); }
+  .q.wrong .opt.picked { background:var(--no); color:#fff; border-color:var(--no); }
+  .fb { margin-top:8px; font-size:.95rem; font-weight:500; }
+  .q.right .fb { color:var(--ok); } .q.wrong .fb { color:var(--no); }
+  .q input[type=text], .q textarea { width:100%; font:inherit; padding:9px 10px; border-radius:10px; border:2px solid var(--line);
+                   background:var(--bg); color:var(--ink); }
+  .q textarea { min-height:70px; resize:vertical; }
+
+  /* reading */
+  .story { background:var(--paper); border:3px solid var(--line); border-radius:18px; padding:18px 20px; position:relative; }
+  .story h3 { font-family:"Fredoka",sans-serif; font-size:1.4rem; margin:0 0 8px; }
+  .story p { margin:0 0 10px; line-height:1.7; }
+  .story p:last-child { margin-bottom:0; }
+  .story mark { background:var(--sun); color:#1a1a26; padding:0 3px; border-radius:4px; }
+  .model { margin-top:8px; padding:8px 10px; border-left:4px solid var(--ok); background:var(--ok-bg); border-radius:6px; font-size:.95rem; display:none; }
+  .model.on { display:block; }
+
+  .check { display:block; width:100%; margin-top:16px; font-family:"Fredoka",sans-serif; font-weight:700; font-size:1.3rem;
+           padding:16px; border:0; border-radius:16px; background:var(--pink); color:#fff; cursor:pointer; }
+  .score { text-align:center; font-family:"Fredoka",sans-serif; font-size:1.3rem; margin-top:10px; min-height:1.5em; }
+
+  footer { margin-top:40px; text-align:center; }
+  #total { font-family:"Fredoka",sans-serif; font-size:1.5rem; }
+  button:focus-visible, textarea:focus-visible, input:focus-visible { outline:3px solid var(--pink); outline-offset:2px; }
+  @media (prefers-reduced-motion: reduce) { * { transition:none !important; } }
+  .warm { background:var(--paper); border:3px dashed var(--line); border-radius:16px; padding:12px 14px; margin-top:16px; text-align:left; }
+  .warm a { color:var(--pink); font-weight:700; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="day">Day 3</span>
+    <h1>The smart nose</h1>
+    <p>16 new words (the rest of List B), Do / Does questions, Is / Are questions, and an interview</p>
+    <p class="he">כ-40 דקות. היום יש יותר מילים, כי המבחן קרוב. עובדים לפי הסדר.</p>
+    <button class="bgtoggle" id="bgToggle">⬜ White background</button>
+    <div class="warm">
+      <b>Warm-up (5 min):</b> open the <a href="https://fffabio.github.io/english-hebrew-cards/" target="_blank" rel="noopener">flashcards</a>, tap <b>Only words I don’t know</b> and go through them.
+      <span class="he" style="display:block">חימום: בכרטיסיות, לחצי על Only words I don’t know ועברי על המילים שעוד לא יודעת.</span>
+    </div>
+  </header>
+
+  <section>
+    <div class="step"><span class="num">1</span><h2>New words</h2></div>
+    <p class="task">Say the word, try to remember the Hebrew, then tap to check. Write sentences for at least 8 of the words (all 16 is even better).
+      <span class="he">תגידי את המילה, נסי לזכור את התרגום, ואז לחצי לבדוק. כתבי משפטים לפחות ל-8 מילים (עדיף לכולן).</span></p>
+    <div class="tiles" id="tiles"></div>
+  </section>
+
+  <section>
+    <div class="step"><span class="num">2</span><h2>Present simple questions: Do / Does</h2></div>
+    <div class="rule">
+      <table>
+        <tr><td>I / you / we / they</td><td><b class="s">Do</b> you like pizza? Yes, I <b class="s">do</b>. / No, I <b class="s">don’t</b>.</td></tr>
+        <tr><td>he / she / it</td><td><b class="s">Does</b> she like pizza? Yes, she <b class="s">does</b>. / No, she <b class="s">doesn’t</b>.</td></tr>
+        <tr><td>Wh- questions</td><td>Where <b class="s">does</b> he work? What <b class="s">do</b> they eat?</td></tr>
+      </table>
+      <div class="he">בשאלה ה-s עוברת ל-Does, והפועל נשאר בלי s: Does she live? (לא lives). בתשובה קצרה עונים עם do / does, לא עם הפועל.</div>
+    </div>
+    <p class="task">1–5: Do or Does? 6–9: choose the correct answer. 10–11: write the short answer. 12–14: write the question with the words in brackets.
+      <span class="he">1–5: Do או Does? 6–9: בחרי את התשובה הנכונה. 10–11: כתבי תשובה קצרה. 12–14: כתבי את השאלה עם המילים שבסוגריים.</span></p>
+    <ol class="qs" id="ex1"></ol>
+    <button class="check" id="check1">Check my answers</button>
+    <div class="score" id="score1"></div>
+  </section>
+
+  <section>
+    <div class="step"><span class="num">3</span><h2>Present progressive questions: Is / Are</h2></div>
+    <div class="rule">
+      <table>
+        <tr><td>he / she / it</td><td><b class="s">Is</b> she cook<b class="s">ing</b> now? Yes, she <b class="s">is</b>. / No, she <b class="s">isn’t</b>.</td></tr>
+        <tr><td>you / we / they</td><td><b class="s">Are</b> they play<b class="s">ing</b>? Yes, they <b class="s">are</b>. / No, they <b class="s">aren’t</b>.</td></tr>
+        <tr><td>Wh- questions</td><td>What <b class="s">are</b> you do<b class="s">ing</b>? Where <b class="s">is</b> he go<b class="s">ing</b>?</td></tr>
+        <tr><td>Every day?</td><td>Then use Do / Does: <b class="s">Do</b> you cook every day?</td></tr>
+      </table>
+      <div class="he">עכשיו → Is / Are + ing. כל יום / בדרך כלל → Do / Does.</div>
+    </div>
+    <p class="task">1–6: choose the correct answer. 7: write the question with the words in brackets. 8: write the short answer.
+      <span class="he">1–6: בחרי את התשובה הנכונה. 7: כתבי את השאלה. 8: כתבי תשובה קצרה.</span></p>
+    <ol class="qs" id="ex2"></ol>
+    <button class="check" id="check2">Check my answers</button>
+    <div class="score" id="score2"></div>
+  </section>
+
+  <section>
+    <div class="step"><span class="num">4</span><h2>Read and answer</h2></div>
+    <p class="task">Read the text, then answer the questions. The new words are in yellow.
+      <span class="he">קראי את הקטע וענו על השאלות. המילים החדשות מסומנות בצהוב.</span></p>
+    <article class="story">
+      <h3>An Interview with Tom Levi</h3>
+      <p>Tom Levi is thirty-five, and he is <mark>blind</mark>. <mark>In fact</mark>, he can’t see anything at all. But Tom is an engineer, and he <mark>designs</mark> apps for people who <mark>are unable to</mark> see. Our school newspaper talks to him today.</p>
+      <p><b>Do you use a lot of technology every day?</b><br>Yes, I do! My phone reads everything to me: messages, books and the news. <mark>Technology</mark> is an <mark>enormous</mark> help for blind people.</p>
+      <p><b>Does your phone help you outside, too?</b><br>Yes, it does. When I walk in the street, the phone tells me where I am. If my direction is <mark>incorrect</mark>, it tells me, and I <mark>get back</mark> to the right street.</p>
+      <p><b>What is your new app?</b><br>It is a “smart nose”. The idea <mark>originally</mark> comes from my grandmother. She is blind too, and she loves cooking. She can’t see the food, <mark>so</mark> she uses her nose. My app smells the food and tells her when it is ready.</p>
+      <p><b>Do people <mark>assume</mark> that blind people can’t work?</b><br>Sometimes they do, and they are often <mark>surprised</mark> when they meet me. But blind people use other senses, <mark>such as</mark> hearing and touch.</p>
+      <p><b>What are you doing right now?</b><br>Right now I’m sitting in my office, and I’m testing the app. I’m also <mark>breathing</mark> in the smell of fresh coffee. For me, coffee is a <mark>natural</mark> <mark>source</mark> of energy!</p>
+    </article>
+    <ol class="qs" id="read"></ol>
+    <button class="check" id="checkRead">Check my answers</button>
+    <div class="score" id="readScore"></div>
+  </section>
+
+  <footer>
+    <div id="total"></div>
+  </footer>
+</div>
+
+<script>
+const bgBtn=document.getElementById("bgToggle");
+function setWhite(on){ document.documentElement.classList.toggle("white",on); bgBtn.textContent=on?"🎨 Original colors":"⬜ White background"; try{ localStorage.setItem("bg-white",on?"1":"0"); }catch(e){} }
+let startWhite=false; try{ startWhite=localStorage.getItem("bg-white")==="1"; }catch(e){}
+setWhite(startWhite);
+bgBtn.onclick=()=>setWhite(!document.documentElement.classList.contains("white"));
+
+const DAY=3;
+const WORDS = [
+  ["source","מקור"],["technology","טכנולוגיה"],["assume","להניח"],["breathe","לנשום"],
+  ["design","לעצב / לתכנן"],["surprise","להפתיע / הפתעה"],["blind","עיוור"],["enormous","עצום / ענק"],
+  ["incorrect","לא נכון / שגוי"],["natural","טבעי"],["be unable to","לא מסוגל ל..."],["get back","לחזור / לקבל בחזרה"],
+  ["in fact","למעשה / בעצם"],["originally","במקור"],["so","אז / לכן / כל כך"],["such as","כמו / למשל"]
+];
+
+function speak(t){
+  try { speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(t); u.lang="en-US"; u.rate=.85; speechSynthesis.speak(u); } catch(e){}
+}
+function checkSentence(s,en){
+  const t=s.trim(); if(!t) return {ok:false,msg:"Write a sentence first."};
+  const w=en.replace(/^(to|be) /,"").toLowerCase(), lt=" "+t.toLowerCase().replace(/[^a-z ]/g," ")+" ";
+  if(!w.split(" ").every(p=>new RegExp("\\b"+p).test(lt))) return {ok:false,msg:`Use “${en}” in your sentence.`};
+  if(t.split(/\s+/).length<4) return {ok:false,msg:"Make it longer: at least 4 words."};
+  if(!/^[A-Z]/.test(t)) return {ok:false,msg:"Start with a capital letter."};
+  if(!/[.!?]$/.test(t)) return {ok:false,msg:"End with a full stop (.), ? or !"};
+  return {ok:true,msg:"Looks good! Read it aloud to check it makes sense."};
+}
+
+/* 1. words */
+const tiles=document.getElementById("tiles");
+WORDS.forEach(([en,he])=>{
+  const d=document.createElement("div"); d.className="tile";
+  d.innerHTML=`<div class="en"><span>${en}</span><button class="say" aria-label="Listen to ${en}">🔊</button></div>
+    <button class="reveal">Tap for Hebrew</button>
+    <textarea placeholder="My sentence with “${en}”…" aria-label="Sentence with ${en}"></textarea>
+    <button class="chk">Check my sentence</button><div class="sfb"></div>`;
+  d.querySelector(".say").onclick=()=>speak(en);
+  const ta=d.querySelector("textarea"), sfb=d.querySelector(".sfb"), key=`day${DAY}-sent-`+en;
+  try{ ta.value=localStorage.getItem(key)||""; }catch(e){}
+  ta.oninput=()=>{ try{ localStorage.setItem(key,ta.value); }catch(e){} sfb.textContent=""; sfb.className="sfb"; };
+  d.querySelector(".chk").onclick=()=>{ const r=checkSentence(ta.value,en); sfb.textContent=r.msg; sfb.className="sfb "+(r.ok?"good":"bad"); };
+  const r=d.querySelector(".reveal");
+  r.onclick=()=>{ const on=r.classList.toggle("shown"); r.textContent=on?he:"Tap for Hebrew"; r.classList.toggle("he",on); };
+  tiles.appendChild(d);
+});
+
+/* answer checking: accepts don't / don’t / do not, I'm / am, isn't / is not */
+function normA(s){
+  return s.toLowerCase().replace(/[’‘`]/g,"'").trim()
+    .replace(/^i'm\b/,"am").replace(/^(he|she|it)'s\b/,"is").replace(/^(we|you|they)'re\b/,"are")
+    .replace(/^'m\b/,"am").replace(/^'s\b/,"is").replace(/^'re\b/,"are")
+    .replace(/\bdoes not\b/g,"doesn't").replace(/\bdo not\b/g,"don't")
+    .replace(/\bis not\b/g,"isn't").replace(/\bare not\b/g,"aren't")
+    .replace(/[^a-z' ]/g," ").replace(/'/g,"").replace(/\s+/g," ").trim();
+}
+const scores={};
+const gapHtml=s=>s.replace("___",'<span class="gap">____</span>');
+function exercise(listId, checkId, scoreId, items, hint, key){
+  const list=document.getElementById(listId), pick={};
+  items.forEach((it,i)=>{
+    const li=document.createElement("li"); li.className="q";
+    if(it.v){
+      li.innerHTML=`<p>${i+1}. ${gapHtml(it.s)} <span class="verb">(${it.v})</span></p><input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Answer ${i+1}"><div class="fb"></div>`;
+      li.querySelector("input").oninput=()=>{ li.className="q"; li.querySelector(".fb").textContent=""; };
+    } else {
+      li.innerHTML=`<p>${i+1}. ${gapHtml(it.s)}</p><div class="opts"></div><div class="fb"></div>`;
+      const box=li.querySelector(".opts");
+      it.o.forEach((o,k)=>{
+        const btn=document.createElement("button"); btn.className="opt"; btn.textContent=o;
+        btn.onclick=()=>{ pick[i]=k; li.className="q"; li.querySelector(".fb").textContent="";
+          box.querySelectorAll(".opt").forEach(x=>x.classList.remove("picked")); btn.classList.add("picked");
+          const g=li.querySelector(".gap"); if(g) g.textContent=o; };
+        box.appendChild(btn);
+      });
+    }
+    list.appendChild(li);
+  });
+  document.getElementById(checkId).onclick=()=>{
+    let ok=0;
+    items.forEach((it,i)=>{
+      const li=list.children[i], fb=li.querySelector(".fb");
+      const ans = it.v ? it.a : it.o[it.a];
+      let good;
+      if(it.v){
+        const v=li.querySelector("input").value;
+        if(!v.trim()){ li.className="q wrong"; fb.textContent="Write the verb."; return; }
+        good = normA(v)===normA(it.a);
+      } else {
+        if(pick[i]===undefined){ li.className="q wrong"; fb.textContent="Choose an answer."; return; }
+        good = pick[i]===it.a;
+      }
+      if(good){ ok++; li.className="q right"; fb.textContent="Correct!"; }
+      else { li.className="q wrong"; fb.textContent=`Answer: ${ans}. ${it.why||hint}`; }
+    });
+    scores[key]={ok,max:items.length};
+    document.getElementById(scoreId).textContent=`${ok} / ${items.length}`; total();
+  };
+}
+
+/* 2. present simple questions */
+exercise("ex1","check1","score1",[
+  {s:"___ you use technology every day?", o:["Do","Does"], a:0},
+  {s:"___ Tom design apps?", o:["Do","Does"], a:1},
+  {s:"___ your parents like surprises?", o:["Do","Does"], a:0},
+  {s:"___ the app help blind people?", o:["Do","Does"], a:1},
+  {s:"___ we need a new source of energy?", o:["Do","Does"], a:0},
+  {s:"Does your grandmother ___ cooking?", o:["love","loves"], a:0, why:"After Does, the verb has no s."},
+  {s:"Do they ___ in a big city?", o:["live","lives"], a:0},
+  {s:"Does Tom work in an office? Yes, he ___.", o:["does","do","is"], a:0, why:"Does … ? → Yes, he does."},
+  {s:"Do you like insects? No, I ___.", o:["doesn’t","don’t","not"], a:1, why:"Do you … ? → No, I don’t."},
+  {s:"Does Ella have a secret? Yes, she ___.", v:"short answer", a:"does"},
+  {s:"Do your friends play football? No, they ___.", v:"short answer", a:"don’t"},
+  {s:"___ in Rome?", v:"Dana / live", a:"Does Dana live"},
+  {s:"___ fresh air?", v:"plants / need", a:"Do plants need"},
+  {s:"Where ___?", v:"Tom / work", a:"does Tom work"}
+], "Do + I/you/we/they, Does + he/she/it, and the verb has no s. Short answers: Yes, she does. / No, they don’t.", "ps");
+
+/* 3. present progressive questions */
+exercise("ex2","check2","score2",[
+  {s:"___ Tom testing the app now?", o:["Is","Are","Does"], a:0},
+  {s:"___ you listening to me?", o:["Is","Are","Do"], a:1},
+  {s:"What ___ you doing right now?", o:["are","do","is"], a:0},
+  {s:"Are they breathing? Yes, they ___.", o:["are","do","is"], a:0, why:"Are … ? → Yes, they are."},
+  {s:"___ you usually design apps at work?", o:["Do","Are"], a:0, why:"usually → present simple → Do."},
+  {s:"___ she cooking at the moment?", o:["Does","Is"], a:1, why:"at the moment → present progressive → Is."},
+  {s:"___ now?", v:"the baby / sleep", a:"Is the baby sleeping"},
+  {s:"Is Grandma cooking right now? No, she ___.", v:"short answer", a:"isn’t"}
+], "now / at the moment → Is / Are + -ing. every day / usually → Do / Does.", "pp");
+
+/* 4. reading */
+const norm=s=>s.toLowerCase().replace(/[^a-z ]/g,"").trim();
+const READ=[
+  {t:"tf", q:"Tom can see a little.", a:false, why:"“In fact, he can’t see anything at all.”"},
+  {t:"mc", q:"Who are Tom’s apps for?", o:["cooks","people who are unable to see","students","engineers"], a:1, why:"He designs apps for people who are unable to see."},
+  {t:"tf", q:"Tom’s phone reads messages and books to him.", a:true, why:"“My phone reads everything to me: messages, books and the news.”"},
+  {t:"word", q:"Find a word in the text that means <span class=\"he\">עצום / ענק</span>.", a:["enormous"], why:"enormous"},
+  {t:"mc", q:"Where does the idea for the new app come from?", o:["his school","his grandmother","a famous cook","the newspaper"], a:1, why:"The idea originally comes from his grandmother."},
+  {t:"word", q:"Complete: Blind people use other senses, ________ hearing and touch.", a:["such as"], why:"such as"},
+  {t:"open", q:"How does the “smart nose” help Tom’s grandmother? Answer in a full sentence.",
+   model:"It smells the food and tells her when it is ready.", keys:["smell","ready"],
+   hintMsg:"Look at the answer about the new app again and compare with the example."},
+  {t:"tf", q:"Right now, Tom is testing the app.", a:true, why:"“Right now I’m sitting in my office, and I’m testing the app.”"}
+];
+const read=document.getElementById("read"), rPick={};
+READ.forEach((it,i)=>{
+  const li=document.createElement("li"); li.className="q";
+  let body="";
+  if(it.t==="tf") body=`<div class="opts"><button class="opt" data-v="1">True</button><button class="opt" data-v="0">False</button></div>`;
+  if(it.t==="mc") body=`<div class="opts">${it.o.map((o,k)=>`<button class="opt" data-v="${k}">${String.fromCharCode(97+k)}) ${o}</button>`).join("")}</div>`;
+  if(it.t==="word") body=`<input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Answer ${i+1}">`;
+  if(it.t==="open") body=`<textarea aria-label="Answer ${i+1}"></textarea><div class="model"><b>Example answer:</b> ${it.model}</div>`;
+  li.innerHTML=`<p>${i+1}. ${it.q}</p>${body}<div class="fb"></div>`;
+  li.querySelectorAll(".opt").forEach(btn=>btn.onclick=()=>{
+    rPick[i]=+btn.dataset.v; li.className="q"; li.querySelector(".fb").textContent="";
+    li.querySelectorAll(".opt").forEach(x=>x.classList.remove("picked")); btn.classList.add("picked");
+  });
+  read.appendChild(li);
+});
+document.getElementById("checkRead").onclick=()=>{
+  let ok=0;
+  READ.forEach((it,i)=>{
+    const li=read.children[i], fb=li.querySelector(".fb"); let good=false, msg="";
+    if(it.t==="tf"){ if(rPick[i]===undefined){msg="Choose True or False.";} else { good=(rPick[i]===1)===it.a; msg=good?"Correct!":it.why; } }
+    if(it.t==="mc"){ if(rPick[i]===undefined){msg="Choose an answer.";} else { good=rPick[i]===it.a; msg=good?"Correct!":it.why; } }
+    if(it.t==="word"){ const v=norm(li.querySelector("input").value); good=it.a.includes(v); msg=good?"Correct!":(v?`The answer is: ${it.why}`:"Write your answer."); }
+    if(it.t==="open"){ const v=li.querySelector("textarea").value.toLowerCase();
+      good=it.keys.every(k=>v.includes(k)); li.querySelector(".model").classList.add("on");
+      msg = !v.trim() ? "Write your answer, then compare with the example." : good ? "Good! Compare with the example answer." : it.hintMsg; }
+    if(good) ok++;
+    li.className="q "+(good?"right":"wrong"); fb.textContent=msg;
+  });
+  scores.read={ok,max:READ.length};
+  document.getElementById("readScore").textContent=`${ok} / ${READ.length}`; total();
+};
+
+function total(){
+  const el=document.getElementById("total");
+  if(!scores.ps||!scores.pp||!scores.read){ el.textContent=""; return; }
+  const t=scores.ps.ok+scores.pp.ok+scores.read.ok, max=scores.ps.max+scores.pp.max+scores.read.max;
+  el.textContent = t===max ? `Day ${DAY} done: ${t}/${max}. Perfect! 🎉` : `Day ${DAY} done: ${t}/${max}. Fix the red ones and check again.`;
+}
+</script>
+</body>
+</html>
