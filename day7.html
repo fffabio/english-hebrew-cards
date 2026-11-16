@@ -154,17 +154,17 @@
   <header>
     <span class="day">Day 7</span>
     <h1>Word games</h1>
-    <p>All the new words from List B and List C: match, quiz, spell and complete</p>
+    <p>All the new words from List B and List C: four games, one after the other</p>
     <p class="he">משחקים עם המילים החדשות. כל טעות נשמרת כ-✗ גם בכרטיסיות, כדי לחזור עליה.</p>
     <button class="bgtoggle" id="bgToggle">⬜ White background</button>
   </header>
 
   <div class="pills" id="sets"></div>
   <div class="tabs" id="tabs">
-    <button class="tab" data-g="match">🧩 Match<small>התאמה</small></button>
-    <button class="tab" data-g="quiz">✅ Quiz<small>בחירה</small></button>
-    <button class="tab" data-g="spell">⌨️ Spell<small>כתיב</small></button>
-    <button class="tab" data-g="sent">📝 Sentences<small>השלמה</small></button>
+    <button class="tab" data-g="match">1 · 🧩 Match<small>התאמה</small></button>
+    <button class="tab" data-g="quiz">2 · ✅ Quiz<small>בחירה</small></button>
+    <button class="tab" data-g="spell">3 · ⌨️ Spell<small>כתיב</small></button>
+    <button class="tab" data-g="sent">4 · 📝 Sentences<small>השלמה</small></button>
   </div>
   <div id="game"></div>
 </div>
@@ -268,15 +268,18 @@ function start(){
 /* ---------- summary ---------- */
 function summary(title, ok, max, missed, again){
   const list=[...missed].map(en=>WORDS.find(w=>w.en===en));
+  const ORDER=["match","quiz","spell","sent"], NAMES={match:"🧩 Match",quiz:"✅ Quiz",spell:"⌨️ Spell",sent:"📝 Sentences"};
+  const nx=ORDER[ORDER.indexOf(game)+1];
   G.innerHTML=`<div class="panel sum"><h3>${title}: ${ok} / ${max} ${ok===max?"🎉":ok>=max*0.7?"👍":"💪"}</h3>
     ${list.length?`<p class="center">Words to practice again (saved as ✗ in the flashcards):</p><ul>${list.map(w=>`<li><b>${esc(w.en)}</b><span class="he">${w.he}</span></li>`).join("")}</ul>`:`<p class="center">No mistakes. Excellent!</p>`}
-    <div class="center"><button class="btn" id="again">Play again</button></div></div>`;
+    <div class="center">${nx?`<button class="btn" id="nextg">Next: ${NAMES[nx]} →</button>`:`<p><b>All 4 games done! 🎉</b></p><button class="btn" id="nextg">Start again: ${NAMES.match}</button>`} <button class="btn alt" id="again">Play again</button></div></div>`;
   document.getElementById("again").onclick=again;
+  document.getElementById("nextg").onclick=()=>{ game=nx||"match"; save(); start(); document.getElementById("tabs").scrollIntoView({behavior:"smooth"}); };
 }
 
 /* ---------- match ---------- */
 function startMatch(){
-  const pick=shuffle(pool()).slice(0,6), L=shuffle(pick), R=shuffle(pick);
+  const pick=shuffle(pool()).slice(0,15), L=shuffle(pick), R=shuffle(pick);
   let selL=null, selR=null, done=0, mistakes=0; const missed=new Set();
   G.innerHTML=`<div class="panel"><div class="prog"><span>Tap a word and its meaning</span><span id="mstat">0 / ${pick.length}</span></div>
     <div class="match"><div class="col" id="cl"></div><div class="col" id="cr"></div></div></div>`;
