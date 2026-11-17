@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Day 8 – Final review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#fff7e6; --paper:#ffffff; --ink:#2b2b3a; --soft:#6b6b7d;
+    --sun:#ffd166; --sky:#8ecae6; --pink:#ef476f; --ok:#2a9d4a; --no:#d62828;
+    --ok-bg:#dff3e4; --no-bg:#fbe0e0; --line:#2b2b3a;
+    color-scheme: light;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:#1d1b26; --paper:#2a2836; --ink:#f3efe4; --soft:#b5b1c4;
+      --sun:#c99a2e; --sky:#3f7f99; --pink:#ff6b8b; --ok:#4cc46d; --no:#ff6060;
+      --ok-bg:#1f3a28; --no-bg:#432326; --line:#f3efe4; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg:#1d1b26; --paper:#2a2836; --ink:#f3efe4; --soft:#b5b1c4;
+    --sun:#c99a2e; --sky:#3f7f99; --pink:#ff6b8b; --ok:#4cc46d; --no:#ff6060;
+    --ok-bg:#1f3a28; --no-bg:#432326; --line:#f3efe4; color-scheme: dark;
+  }
+  :root.white {
+    --bg:#ffffff; --paper:#ffffff; --ink:#2b2b3a; --soft:#6b6b7d;
+    --sun:#ffd166; --sky:#8ecae6; --pink:#ef476f; --ok:#2a9d4a; --no:#d62828;
+    --ok-bg:#dff3e4; --no-bg:#fbe0e0; --line:#2b2b3a; color-scheme: light;
+  }
+  .bgtoggle { margin-top:10px; font:inherit; font-size:.9rem; padding:6px 14px; border-radius:999px; border:2px solid var(--line); background:var(--paper); color:var(--ink); cursor:pointer; }
+  html { scroll-padding-top:env(safe-area-inset-top,0px); }
+  *,*::before,*::after { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+         font-family:"Rubik",system-ui,-apple-system,"Segoe UI",Arial,sans-serif; font-size:17px; line-height:1.5; }
+  .wrap { max-width:640px; margin:0 auto; padding:20px 16px 60px; }
+  h1,h2 { font-family:"Fredoka","Rubik",system-ui,sans-serif; margin:0; line-height:1.15; }
+  header { text-align:center; padding:12px 0 8px; }
+  .day { display:inline-block; background:var(--pink); color:#fff; font-family:"Fredoka",sans-serif; font-weight:700;
+         font-size:1.1rem; padding:6px 18px; border-radius:999px; transform:rotate(-3deg); }
+  header h1 { font-size:2.2rem; margin-top:10px; }
+  header p { color:var(--soft); margin:6px 0 0; }
+  .he { direction:rtl; unicode-bidi:isolate; }
+
+  section { margin-top:34px; }
+  .step { display:flex; align-items:center; gap:12px; margin-bottom:6px; }
+  .num { flex:none; width:44px; height:44px; border-radius:50%; background:var(--sun); color:#2b2b3a; display:grid; place-items:center;
+         font-family:"Fredoka",sans-serif; font-weight:700; font-size:1.4rem; border:3px solid var(--line); }
+  h2 { font-size:1.6rem; }
+  .task { color:var(--soft); margin:4px 0 14px; }
+  .task .he { display:block; }
+
+  /* words */
+  .tiles { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:10px; }
+  .tile { background:var(--paper); border:3px solid var(--line); border-radius:18px; padding:12px 12px 10px; }
+  .tile .en { font-family:"Fredoka",sans-serif; font-weight:700; font-size:1.35rem; display:flex; justify-content:space-between; align-items:center; gap:6px; }
+  .say { border:0; background:transparent; font-size:1.2rem; cursor:pointer; padding:4px; border-radius:8px; color:inherit; }
+  .reveal { margin-top:6px; width:100%; font:inherit; font-size:1rem; padding:8px; border-radius:10px; cursor:pointer;
+            border:2px dashed var(--soft); background:transparent; color:var(--soft); }
+  .reveal.shown { border:2px solid transparent; background:var(--sky); color:#1a1a26; font-weight:500; font-size:1.15rem; }
+  .tile textarea { margin-top:8px; width:100%; font:inherit; font-size:.95rem; padding:8px; border-radius:10px;
+                   border:2px solid var(--soft); background:var(--bg); color:var(--ink); resize:vertical; min-height:56px; }
+
+  .chk { margin-top:6px; font:inherit; font-size:.9rem; padding:6px 12px; border-radius:10px; border:2px solid var(--line); background:var(--paper); color:var(--ink); cursor:pointer; }
+  .sfb { font-size:.9rem; margin-top:4px; font-weight:500; }
+  .sfb.good { color:var(--ok); } .sfb.bad { color:var(--no); }
+  .verb { color:var(--soft); font-style:italic; }
+
+  /* grammar */
+  .rule { background:var(--sky); color:#1a1a26; border-radius:18px; padding:14px 16px; border:3px solid var(--line); }
+  .rule table { width:100%; border-collapse:collapse; font-size:1.05rem; }
+  .rule td { padding:4px 6px; }
+  .rule td:first-child { font-weight:700; white-space:nowrap; }
+  .rule b.s { color:#b0002d; font-size:1.2em; }
+  .rule .he { margin-top:8px; font-size:.95rem; }
+  ol.qs { list-style:none; padding:0; margin:16px 0 0; display:grid; gap:10px; }
+  .q { background:var(--paper); border:3px solid var(--line); border-radius:16px; padding:12px 14px; }
+  .q.right { background:var(--ok-bg); border-color:var(--ok); }
+  .q.wrong { background:var(--no-bg); border-color:var(--no); }
+  .q p { margin:0 0 8px; }
+  .gap { display:inline-block; min-width:70px; border-bottom:3px solid var(--pink); text-align:center; font-weight:700; }
+  .opts { display:flex; flex-wrap:wrap; gap:8px; }
+  .opt { font:inherit; padding:9px 16px; border-radius:12px; border:2px solid var(--line); background:var(--bg); color:var(--ink); cursor:pointer; }
+  .opt.picked { background:var(--sun); color:#1a1a26; font-weight:700; }
+  .q.right .opt.picked { background:var(--ok); color:#fff; border-color:var(--ok); }
+  .q.wrong .opt.picked { background:var(--no); color:#fff; border-color:var(--no); }
+  .fb { margin-top:8px; font-size:.95rem; font-weight:500; }
+  .q.right .fb { color:var(--ok); } .q.wrong .fb { color:var(--no); }
+  .q input[type=text], .q textarea { width:100%; font:inherit; padding:9px 10px; border-radius:10px; border:2px solid var(--line);
+                   background:var(--bg); color:var(--ink); }
+  .q textarea { min-height:70px; resize:vertical; }
+
+  /* reading */
+  .story { background:var(--paper); border:3px solid var(--line); border-radius:18px; padding:18px 20px; position:relative; }
+  .story h3 { font-family:"Fredoka",sans-serif; font-size:1.4rem; margin:0 0 8px; }
+  .story p { margin:0 0 10px; line-height:1.7; }
+  .story p:last-child { margin-bottom:0; }
+  .story mark { background:var(--sun); color:#1a1a26; padding:0 3px; border-radius:4px; }
+  .model { margin-top:8px; padding:8px 10px; border-left:4px solid var(--ok); background:var(--ok-bg); border-radius:6px; font-size:.95rem; display:none; }
+  .model.on { display:block; }
+
+  .check { display:block; width:100%; margin-top:16px; font-family:"Fredoka",sans-serif; font-weight:700; font-size:1.3rem;
+           padding:16px; border:0; border-radius:16px; background:var(--pink); color:#fff; cursor:pointer; }
+  .score { text-align:center; font-family:"Fredoka",sans-serif; font-size:1.3rem; margin-top:10px; min-height:1.5em; }
+
+  footer { margin-top:40px; text-align:center; }
+  #total { font-family:"Fredoka",sans-serif; font-size:1.5rem; }
+  button:focus-visible, textarea:focus-visible, input:focus-visible { outline:3px solid var(--pink); outline-offset:2px; }
+  @media (prefers-reduced-motion: reduce) { * { transition:none !important; } }
+  .tips { background:var(--paper); border:3px dashed var(--line); border-radius:16px; padding:14px 18px; }
+  .tips ol { margin:6px 0 0; padding-inline-start:22px; }
+  .tips li { margin:6px 0; }
+  .rule td { vertical-align:top; }
+  .hes { display:block; direction:rtl; unicode-bidi:isolate; text-align:right; font-size:.85rem; font-weight:400; opacity:.8; margin:1px 0 4px; }
+  .xlist { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:8px; margin-top:12px; }
+  .xw { font:inherit; padding:10px; border-radius:12px; border:2px solid var(--line); background:var(--paper); color:var(--ink); cursor:pointer; text-align:center; }
+  .xw b { display:block; font-family:"Fredoka",sans-serif; font-size:1.1rem; }
+  .xw span { display:block; min-height:1.3em; color:var(--soft); }
+  .xw.open span { color:var(--ink); }
+  .panel { background:var(--paper); border:3px solid var(--line); border-radius:18px; padding:16px; margin-top:14px; }
+  .prog { display:flex; justify-content:space-between; color:var(--soft); font-size:.95rem; margin-bottom:10px; }
+  .big { font-family:"Fredoka",sans-serif; font-size:1.8rem; text-align:center; margin:8px 0 14px; }
+  .opts4 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .mb { font:inherit; font-size:1.05rem; padding:12px 8px; border-radius:14px; border:2px solid var(--line); background:var(--bg); color:var(--ink); cursor:pointer; min-height:52px; }
+  .mb.right { background:var(--ok); color:#fff; border-color:var(--ok); }
+  .mb.wrong { background:var(--no); color:#fff; border-color:var(--no); }
+  .fb2 { min-height:1.6em; text-align:center; margin-top:10px; font-weight:500; }
+  .fb2.ok { color:var(--ok); } .fb2.no { color:var(--no); }
+  .center { text-align:center; margin-top:12px; }
+  .btn { font-family:"Fredoka",sans-serif; font-size:1.1rem; padding:10px 18px; border:0; border-radius:12px; background:var(--pink); color:#fff; cursor:pointer; }
+  .btn.alt { background:var(--paper); color:var(--ink); border:2px solid var(--line); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="day">Day 8</span>
+    <h1>Final review</h1>
+    <p>The day before the test: rules, your ✗ words, and a short grammar check</p>
+    <p class="he">היום לא לומדים דברים חדשים. חוזרים על הכללים ועל המילים שעוד קשות, ואז הולכים לישון מוקדם. בהצלחה! 🍀</p>
+    <button class="bgtoggle" id="bgToggle">⬜ White background</button>
+  </header>
+
+  <section>
+    <div class="step"><span class="num">1</span><h2>All the rules on one page</h2></div>
+    <div class="rule">
+      <table>
+        <tr><td>he / she / it + s<span class="hes">הוא / היא / זה: מוסיפים s</span></td><td>She work<b class="s">s</b>. He watch<b class="s">es</b>. She stud<b class="s">ies</b>. It <b class="s">has</b>.<span class="hes">אחרי s, sh, ch, x, o → es · עיצור + y → ies · have → has</span></td></tr>
+        <tr><td>Negative<span class="hes">שלילה</span></td><td>I / you / we / they <b class="s">don’t</b> work · he / she / it <b class="s">doesn’t</b> work<span class="hes">אחרי don’t / doesn’t הפועל בלי s</span></td></tr>
+        <tr><td>Questions<span class="hes">שאלות</span></td><td><b class="s">Do</b> you work? <b class="s">Does</b> she work? Where <b class="s">does</b> he live?<br>Yes, she <b class="s">does</b>. / No, they <b class="s">don’t</b>.<span class="hes">אחרי Do / Does הפועל בלי s · בתשובה קצרה: do / does</span></td></tr>
+        <tr><td>Present progressive<span class="hes">הווה מתמשך</span></td><td>I <b class="s">am</b> working · she <b class="s">is</b> working · they <b class="s">are</b> working<br><b class="s">Is</b> she working? No, she <b class="s">isn’t</b>. · They <b class="s">aren’t</b> working.<span class="hes">משהו שקורה עכשיו: am / is / are + ing</span></td></tr>
+        <tr><td>-ing spelling<span class="hes">כתיב ing</span></td><td>make → mak<b class="s">ing</b> · swim → swim<b class="s">ming</b> · lie → l<b class="s">ying</b> · play → play<b class="s">ing</b><span class="hes">e נופלת · מכפילים עיצור בפועל קצר · ie → y</span></td></tr>
+        <tr><td>Simple or progressive?<span class="hes">פשוט או מתמשך?</span></td><td>always, usually, often, sometimes, never, every day → <b class="s">present simple</b><br>now, right now, at the moment, Look!, Listen! → <b class="s">present progressive</b><span class="hes">תמיד, בדרך כלל, לפעמים, אף פעם, כל יום → פשוט · עכשיו, כרגע, תראי!, תקשיבי! → מתמשך</span></td></tr>
+        <tr><td>No -ing<span class="hes">בלי ing</span></td><td>like, love, want, know, need, understand: I <b class="s">want</b> it now.<span class="hes">לחבב, לאהוב, לרצות, לדעת, להצטרך, להבין – תמיד בלי ing</span></td></tr>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="step"><span class="num">2</span><h2>My ✗ words</h2></div>
+    <p class="task">These are the words you marked ✗ in the flashcards and games. Tap a word to see the Hebrew, then do the quiz. A correct answer removes the ✗.
+      <span class="he">אלה המילים שסימנת ✗. לחצי על מילה כדי לראות תרגום, ואז עשי את החידון. תשובה נכונה מורידה את ה-✗.</span></p>
+    <div id="xinfo"></div>
+    <div class="xlist" id="xlist"></div>
+    <div id="xquiz"></div>
+  </section>
+
+  <section>
+    <div class="step"><span class="num">3</span><h2>Last grammar check</h2></div>
+    <p class="task">1–8: choose the correct answer. 9–12: write the words in brackets in the right form.
+      <span class="he">1–8: בחרי את התשובה הנכונה. 9–12: כתבי את המילים שבסוגריים בצורה הנכונה.</span></p>
+    <ol class="qs" id="ex1"></ol>
+    <button class="check" id="check1">Check my answers</button>
+    <div class="score" id="score1"></div>
+  </section>
+
+  <section>
+    <div class="step"><span class="num">4</span><h2>Tips for tomorrow</h2></div>
+    <div class="tips he">
+      <ol>
+        <li>בקטע הקריאה: קודם קראי את השאלות, ואז את הקטע. כך תדעי מה לחפש.</li>
+        <li>בשאלה פתוחה: עני במשפט מלא באנגלית, ואפשר להשתמש במילים מהקטע.</li>
+        <li>בדקדוק: חפשי מילות סימן. every day / usually → פשוט. now / Look! → מתמשך.</li>
+        <li>he / she / it → s. אבל אחרי does / doesn’t – בלי s!</li>
+        <li>אם לא בטוחה במילה, דלגי וחזרי אליה בסוף. אל תשאירי שאלה ריקה.</li>
+        <li>בסוף, עברי שוב על כל התשובות. ותישני טוב הלילה! 😴</li>
+      </ol>
+    </div>
+  </section>
+  <footer><div id="total"></div></footer>
+</div>
+
+<script>
+const bgBtn=document.getElementById("bgToggle");
+function setWhite(on){ document.documentElement.classList.toggle("white",on); bgBtn.textContent=on?"🎨 Original colors":"⬜ White background"; try{ localStorage.setItem("bg-white",on?"1":"0"); }catch(e){} }
+let startWhite=false; try{ startWhite=localStorage.getItem("bg-white")==="1"; }catch(e){}
+setWhite(startWhite);
+bgBtn.onclick=()=>setWhite(!document.documentElement.classList.contains("white"));
+
+
+const WORDS=[{"en":"part of","he":"חלק מ...","list":"A"},
+  {"en":"delicious","he":"טעים","list":"A"},
+  {"en":"cousin","he":"בן דוד / בת דודה","list":"A"},
+  {"en":"factory","he":"מפעל","list":"A"},
+  {"en":"blog","he":"בלוג","list":"A"},
+  {"en":"upset","he":"מבואס / נסער","list":"A"},
+  {"en":"illegal","he":"לא חוקי","list":"A"},
+  {"en":"taste","he":"טעם","list":"A"},
+  {"en":"amazing","he":"מדהים","list":"A"},
+  {"en":"concert","he":"קונצרט","list":"A"},
+  {"en":"take it easy","he":"תרגיע / קח את זה בקלות","list":"A"},
+  {"en":"adjust","he":"להתאים","list":"A"},
+  {"en":"develop","he":"לפתח","list":"A"},
+  {"en":"downtown","he":"מרכז העיר","list":"A"},
+  {"en":"create","he":"ליצור","list":"A"},
+  {"en":"unpleasant","he":"לא נעים","list":"A"},
+  {"en":"cooking","he":"בישול","list":"A"},
+  {"en":"last","he":"להימשך / אחרון","list":"A"},
+  {"en":"festival","he":"פסטיבל","list":"A"},
+  {"en":"chance","he":"הזדמנות / סיכוי","list":"A"},
+  {"en":"exciting","he":"מרגש","list":"A"},
+  {"en":"discount","he":"הנחה","list":"A"},
+  {"en":"northern","he":"צפוני","list":"A"},
+  {"en":"traditional","he":"מסורתי","list":"A"},
+  {"en":"land","he":"אדמה / ארץ","list":"A"},
+  {"en":"crowded","he":"צפוף","list":"A"},
+  {"en":"for sale","he":"למכירה","list":"A"},
+  {"en":"variety","he":"מגוון","list":"A"},
+  {"en":"adventure","he":"הרפתקה","list":"A"},
+  {"en":"business","he":"עסק","list":"A"},
+  {"en":"country","he":"מדינה","list":"A"},
+  {"en":"handbag","he":"תיק יד","list":"A"},
+  {"en":"to admire","he":"להתפעל / להעריך / להעריץ","list":"A"},
+  {"en":"cause","he":"לגרום","list":"A"},
+  {"en":"click","he":"ללחוץ / קליק","list":"A"},
+  {"en":"download","he":"להוריד","list":"A"},
+  {"en":"gather","he":"לאסוף / להתכנס","list":"A"},
+  {"en":"treat","he":"לפנק / להתייחס","list":"A"},
+  {"en":"annual","he":"שנתי","list":"A"},
+  {"en":"dressed","he":"לבוש","list":"A"},
+  {"en":"kind","he":"אדיב / סוג","list":"A"},
+  {"en":"loud","he":"רועש / חזק","list":"A"},
+  {"en":"major","he":"עיקרי / גדול","list":"A"},
+  {"en":"valuable","he":"יקר ערך","list":"A"},
+  {"en":"entire","he":"שלם / כולו","list":"A"},
+  {"en":"excited","he":"נרגש","list":"A"},
+  {"en":"each other","he":"זה את זה / אחד את השני","list":"A"},
+  {"en":"finally","he":"סוף סוף","list":"A"},
+  {"en":"get together","he":"להיפגש","list":"A"},
+  {"en":"look around","he":"להסתכל מסביב","list":"A"},
+  {"en":"make sure","he":"לוודא","list":"A"},
+  {"en":"possibly","he":"אולי / ייתכן","list":"A"},
+  {"en":"quite","he":"די / למדי","list":"A"},
+  {"en":"right now","he":"עכשיו / כרגע","list":"A"},
+  {"en":"take care of","he":"לטפל ב / לדאוג ל","list":"A"},
+  {"en":"capital","he":"עיר בירה","list":"B"},
+  {"en":"carrot","he":"גזר","list":"B"},
+  {"en":"engineer","he":"מהנדס","list":"B"},
+  {"en":"expert","he":"מומחה","list":"B"},
+  {"en":"insect","he":"חרק","list":"B"},
+  {"en":"invention","he":"המצאה","list":"B"},
+  {"en":"iron","he":"ברזל / מגהץ","list":"B"},
+  {"en":"secret","he":"סוד","list":"B"},
+  {"en":"sense","he":"חוש / היגיון","list":"B"},
+  {"en":"source","he":"מקור","list":"B"},
+  {"en":"technology","he":"טכנולוגיה","list":"B"},
+  {"en":"assume","he":"להניח","list":"B"},
+  {"en":"breathe","he":"לנשום","list":"B"},
+  {"en":"design","he":"לעצב / לתכנן","list":"B"},
+  {"en":"surprise","he":"להפתיע","list":"B"},
+  {"en":"blind","he":"עיוור","list":"B"},
+  {"en":"enormous","he":"עצום / ענק","list":"B"},
+  {"en":"incorrect","he":"לא נכון / שגוי","list":"B"},
+  {"en":"natural","he":"טבעי","list":"B"},
+  {"en":"be unable to","he":"לא מסוגל ל...","list":"B"},
+  {"en":"get back","he":"לחזור / לקבל בחזרה","list":"B"},
+  {"en":"in fact","he":"למעשה / בעצם","list":"B"},
+  {"en":"originally","he":"במקור","list":"B"},
+  {"en":"so","he":"אז / לכן / כל כך","list":"B"},
+  {"en":"such as","he":"כמו / למשל","list":"B"},
+  {"en":"advertisement","he":"פרסומת","list":"C"},
+  {"en":"bill","he":"חשבון (לתשלום)","list":"C"},
+  {"en":"contract","he":"חוזה","list":"C"},
+  {"en":"deal","he":"עסקה","list":"C"},
+  {"en":"experience","he":"ניסיון / חוויה","list":"C"},
+  {"en":"fee","he":"תשלום / עמלה","list":"C"},
+  {"en":"literature","he":"ספרות","list":"C"},
+  {"en":"tear","he":"דמעה","list":"C"},
+  {"en":"website","he":"אתר אינטרנט","list":"C"},
+  {"en":"agree","he":"להסכים","list":"C"},
+  {"en":"charge","he":"לגבות (כסף) / להטעין","list":"C"},
+  {"en":"convince","he":"לשכנע","list":"C"},
+  {"en":"lie","he":"לשקר / לשכב","list":"C"},
+  {"en":"offer","he":"להציע","list":"C"},
+  {"en":"refuse","he":"לסרב","list":"C"},
+  {"en":"shop","he":"לעשות קניות","list":"C"},
+  {"en":"clear","he":"ברור","list":"C"},
+  {"en":"digital","he":"דיגיטלי","list":"C"},
+  {"en":"essential","he":"חיוני","list":"C"},
+  {"en":"lucky","he":"בר מזל","list":"C"},
+  {"en":"positive","he":"חיובי","list":"C"},
+  {"en":"be wrong","he":"לטעות","list":"C"},
+  {"en":"Congratulations!","he":"מזל טוב! / ברכות!","list":"C"},
+  {"en":"credit (card)","he":"(כרטיס) אשראי","list":"C"},
+  {"en":"despite","he":"למרות","list":"C"},
+  {"en":"miss a chance","he":"לפספס הזדמנות","list":"C"},
+  {"en":"plenty of","he":"הרבה / שפע של","list":"C"},
+  {"en":"somehow","he":"איכשהו","list":"C"}];
+
+let status={}; try{ status=JSON.parse(localStorage.getItem("cardStatus")||"{}"); }catch(e){}
+function saveStatus(){ try{ localStorage.setItem("cardStatus",JSON.stringify(status)); }catch(e){} }
+const shuffle=a=>{ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+function speak(t){ try{ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(t.replace(/[()!]/g,"")); u.lang="en-US"; u.rate=.85; speechSynthesis.speak(u); }catch(e){} }
+const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
+const LNAME={A:"List A",B:"List B",C:"List C"};
+
+function drawX(){
+  const x=WORDS.filter(w=>status[w.en]===false);
+  const info=document.getElementById("xinfo"), list=document.getElementById("xlist"), qz=document.getElementById("xquiz");
+  list.innerHTML="";
+  if(!x.length){
+    info.innerHTML=`<div class="panel center">No ✗ words left. 🎉 Here is a quiz with 15 random words from all three lists.</div>`;
+    qz.innerHTML=`<div class="center"><button class="btn" id="qstart">Start the quiz (15 words)</button></div>`;
+    document.getElementById("qstart").onclick=()=>quiz(shuffle(WORDS).slice(0,15));
+    return;
+  }
+  info.innerHTML=`<p class="center"><b>${x.length}</b> word${x.length>1?"s":""} to review</p>`;
+  x.forEach(w=>{ const b=document.createElement("button"); b.className="xw"; b.innerHTML=`<b>${esc(w.en)}</b><span>tap</span>`;
+    b.onclick=()=>{ const o=b.classList.toggle("open"); b.querySelector("span").textContent=o?w.he:"tap"; b.querySelector("span").className=o?"he":""; if(o) speak(w.en); };
+    list.appendChild(b); });
+  qz.innerHTML=`<div class="center"><button class="btn" id="qstart">Quiz on my ✗ words (${Math.min(x.length,20)})</button></div>`;
+  document.getElementById("qstart").onclick=()=>quiz(shuffle(x).slice(0,20));
+}
+function quiz(items){
+  const qz=document.getElementById("xquiz"); let i=0, ok=0; const missed=[];
+  const show=()=>{
+    if(i>=items.length){
+      qz.innerHTML=`<div class="panel center"><div class="big">${ok} / ${items.length} ${ok===items.length?"🎉":"💪"}</div>
+        ${missed.length?`<p>Still hard: ${missed.map(w=>`<b>${esc(w.en)}</b> = <span class="he">${w.he}</span>`).join(" · ")}</p>`:"<p>All correct!</p>"}
+        <button class="btn" id="qagain">Back to my ✗ words</button></div>`;
+      document.getElementById("qagain").onclick=drawX; return;
+    }
+    const w=items[i], heToEn=i%2===1, key=heToEn?"en":"he";
+    const opts=shuffle([w[key],...shuffle(WORDS.filter(x=>x.en!==w.en)).slice(0,3).map(x=>x[key])]);
+    qz.innerHTML=`<div class="panel"><div class="prog"><span>${i+1} / ${items.length}</span><span>${LNAME[w.list]}</span></div>
+      <div class="big${heToEn?" he":""}">${heToEn?w.he:esc(w.en)}</div>
+      <div class="opts4">${opts.map(o=>`<button class="mb${heToEn?"":" he"}">${esc(o)}</button>`).join("")}</div>
+      <div class="fb2" id="qfb"></div><div class="center" id="qnx"></div></div>`;
+    if(!heToEn) speak(w.en);
+    qz.querySelectorAll(".mb").forEach(b=>b.onclick=()=>{
+      if(qz.querySelector(".mb.right")) return;
+      qz.querySelectorAll(".mb").forEach(x=>{ if(x.textContent===w[key]) x.classList.add("right"); });
+      const fb=document.getElementById("qfb");
+      if(b.textContent===w[key]){ ok++; status[w.en]=true; fb.className="fb2 ok"; fb.textContent="Correct! ✗ removed."; }
+      else { b.classList.add("wrong"); status[w.en]=false; missed.push(w); fb.className="fb2 no"; fb.innerHTML=`${esc(w.en)} = <span class="he">${w.he}</span>`; }
+      saveStatus();
+      document.getElementById("qnx").innerHTML=`<button class="btn alt" id="qn">${i+1<items.length?"Next →":"See results"}</button>`;
+      document.getElementById("qn").onclick=()=>{ i++; show(); };
+    });
+  };
+  show();
+}
+drawX();
+
+/* answer checking: accepts don't / don’t / do not, I'm / am, isn't / is not */
+function normA(s){
+  return s.toLowerCase().replace(/[’‘`]/g,"'").trim()
+    .replace(/^i'm\b/,"am").replace(/^(he|she|it)'s\b/,"is").replace(/^(we|you|they)'re\b/,"are")
+    .replace(/^'m\b/,"am").replace(/^'s\b/,"is").replace(/^'re\b/,"are")
+    .replace(/\bdoes not\b/g,"doesn't").replace(/\bdo not\b/g,"don't")
+    .replace(/\bis not\b/g,"isn't").replace(/\bare not\b/g,"aren't")
+    .replace(/[^a-z' ]/g," ").replace(/'/g,"").replace(/\s+/g," ").trim();
+}
+const scores={};
+const gapHtml=s=>s.replace("___",'<span class="gap">____</span>');
+function exercise(listId, checkId, scoreId, items, hint, key){
+  const list=document.getElementById(listId), pick={};
+  items.forEach((it,i)=>{
+    const li=document.createElement("li"); li.className="q";
+    if(it.v){
+      li.innerHTML=`<p>${i+1}. ${gapHtml(it.s)} <span class="verb">(${it.v})</span></p><input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Answer ${i+1}"><div class="fb"></div>`;
+      li.querySelector("input").oninput=()=>{ li.className="q"; li.querySelector(".fb").textContent=""; };
+    } else {
+      li.innerHTML=`<p>${i+1}. ${gapHtml(it.s)}</p><div class="opts"></div><div class="fb"></div>`;
+      const box=li.querySelector(".opts");
+      it.o.forEach((o,k)=>{
+        const btn=document.createElement("button"); btn.className="opt"; btn.textContent=o;
+        btn.onclick=()=>{ pick[i]=k; li.className="q"; li.querySelector(".fb").textContent="";
+          box.querySelectorAll(".opt").forEach(x=>x.classList.remove("picked")); btn.classList.add("picked");
+          const g=li.querySelector(".gap"); if(g) g.textContent=o; };
+        box.appendChild(btn);
+      });
+    }
+    list.appendChild(li);
+  });
+  document.getElementById(checkId).onclick=()=>{
+    let ok=0;
+    items.forEach((it,i)=>{
+      const li=list.children[i], fb=li.querySelector(".fb");
+      const ans = it.v ? it.a : it.o[it.a];
+      let good;
+      if(it.v){
+        const v=li.querySelector("input").value;
+        if(!v.trim()){ li.className="q wrong"; fb.textContent="Write the verb."; return; }
+        good = normA(v)===normA(it.a);
+      } else {
+        if(pick[i]===undefined){ li.className="q wrong"; fb.textContent="Choose an answer."; return; }
+        good = pick[i]===it.a;
+      }
+      if(good){ ok++; li.className="q right"; fb.textContent="Correct!"; }
+      else { li.className="q wrong"; fb.textContent=`Answer: ${ans}. ${it.why||hint}`; }
+    });
+    scores[key]={ok,max:items.length};
+    document.getElementById(scoreId).textContent=`${ok} / ${items.length}`; total();
+  };
+}
+
+
+exercise("ex1","check1","score1",[
+  {s:"My brother ___ football every Saturday. <span class=\"verb\">(play)</span>", o:["play","plays","is playing"], a:1, why:"every Saturday + he → plays."},
+  {s:"Look! The kids ___ in the garden. <span class=\"verb\">(run)</span>", o:["run","runs","are running"], a:2, why:"Look! → are + -ing. run → running."},
+  {s:"She ___ fish. She is vegetarian.", o:["don’t eat","doesn’t eat","doesn’t eats"], a:1, why:"she → doesn’t + verb with no s."},
+  {s:"___ your parents work downtown?", o:["Do","Does","Are"], a:0, why:"your parents = they → Do."},
+  {s:"Where ___ your cousin live?", o:["do","does","is"], a:1, why:"your cousin = he/she → does."},
+  {s:"I ___ what you mean. <span class=\"verb\">(understand)</span>", o:["understand","am understanding","understands"], a:0, why:"understand → no -ing."},
+  {s:"Dad ___ the car every Friday. <span class=\"verb\">(wash)</span>", o:["washs","washes","washies"], a:1, why:"wash ends in sh → washes."},
+  {s:"Is she sleeping? No, she ___.", o:["doesn’t","isn’t","not"], a:1, why:"Is … ? → No, she isn’t."},
+  {s:"My sister ___ hard every evening.", v:"study", a:"studies"},
+  {s:"Listen! Somebody ___ at the door.", v:"knock", a:"is knocking"},
+  {s:"We ___ TV in the morning.", v:"not / watch", a:"don’t watch"},
+  {s:"Does he like literature? Yes, he ___.", v:"short answer", a:"does"}
+], "he/she/it + s · don’t/doesn’t + verb · Do/Does + verb with no s · now → am/is/are + -ing · want/know → no -ing.", "gr");
+function total(){
+  const el=document.getElementById("total"); if(!scores.gr) return;
+  el.textContent = scores.gr.ok===scores.gr.max ? "Ready for the test! 🎉🍀" : `${scores.gr.ok}/${scores.gr.max}. Look at the red ones and at the rules in part 1.`;
+}
+</script>
+</body>
+</html>
