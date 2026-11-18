@@ -163,8 +163,8 @@
 
   <section>
     <div class="step"><span class="num">2</span><h2>My ✗ words</h2></div>
-    <p class="task">These are the words you marked ✗ in the flashcards and games. Tap a word to see the Hebrew, then do the quiz. A correct answer removes the ✗.
-      <span class="he">אלה המילים שסימנת ✗. לחצי על מילה כדי לראות תרגום, ואז עשי את החידון. תשובה נכונה מורידה את ה-✗.</span></p>
+    <p class="task">These are the new words (List B and List C) you marked ✗ in the flashcards and games. Tap a word to see the Hebrew, then do the quiz. A correct answer removes the ✗.
+      <span class="he">אלה המילים החדשות (רשימות B ו-C) שסימנת ✗. לחצי על מילה כדי לראות תרגום, ואז עשי את החידון. תשובה נכונה מורידה את ה-✗.</span></p>
     <div id="xinfo"></div>
     <div class="xlist" id="xlist"></div>
     <div id="xquiz"></div>
@@ -318,13 +318,14 @@ const shuffle=a=>{ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floo
 function speak(t){ try{ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(t.replace(/[()!]/g,"")); u.lang="en-US"; u.rate=.85; speechSynthesis.speak(u); }catch(e){} }
 const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
 const LNAME={A:"List A",B:"List B",C:"List C"};
+WORDS.splice(0, WORDS.length, ...WORDS.filter(w=>w.list!=="A"));
 
 function drawX(){
   const x=WORDS.filter(w=>status[w.en]===false);
   const info=document.getElementById("xinfo"), list=document.getElementById("xlist"), qz=document.getElementById("xquiz");
   list.innerHTML="";
   if(!x.length){
-    info.innerHTML=`<div class="panel center">No ✗ words left. 🎉 Here is a quiz with 15 random words from all three lists.</div>`;
+    info.innerHTML=`<div class="panel center">No ✗ words left. 🎉 Here is a quiz with 15 random words from List B and List C.</div>`;
     qz.innerHTML=`<div class="center"><button class="btn" id="qstart">Start the quiz (15 words)</button></div>`;
     document.getElementById("qstart").onclick=()=>quiz(shuffle(WORDS).slice(0,15));
     return;
