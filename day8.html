@@ -325,17 +325,18 @@ function drawX(){
   const info=document.getElementById("xinfo"), list=document.getElementById("xlist"), qz=document.getElementById("xquiz");
   list.innerHTML="";
   if(!x.length){
-    info.innerHTML=`<div class="panel center">No ✗ words left. 🎉 Here is a quiz with 15 random words from List B and List C.</div>`;
-    qz.innerHTML=`<div class="center"><button class="btn" id="qstart">Start the quiz (15 words)</button></div>`;
-    document.getElementById("qstart").onclick=()=>quiz(shuffle(WORDS).slice(0,15));
+    info.innerHTML=`<div class="panel center">No ✗ words left. 🎉 Here is a quiz with 25 random words from List B and List C.</div>`;
+    qz.innerHTML=`<div class="center"><button class="btn" id="qstart">Start the quiz (25 words)</button></div>`;
+    document.getElementById("qstart").onclick=()=>quiz(shuffle(WORDS).slice(0,25));
     return;
   }
   info.innerHTML=`<p class="center"><b>${x.length}</b> word${x.length>1?"s":""} to review</p>`;
   x.forEach(w=>{ const b=document.createElement("button"); b.className="xw"; b.innerHTML=`<b>${esc(w.en)}</b><span>tap</span>`;
     b.onclick=()=>{ const o=b.classList.toggle("open"); b.querySelector("span").textContent=o?w.he:"tap"; b.querySelector("span").className=o?"he":""; if(o) speak(w.en); };
     list.appendChild(b); });
-  qz.innerHTML=`<div class="center"><button class="btn" id="qstart">Quiz on my ✗ words (${Math.min(x.length,20)})</button></div>`;
-  document.getElementById("qstart").onclick=()=>quiz(shuffle(x).slice(0,20));
+  const xs=shuffle(x).slice(0,25), extra=shuffle(WORDS.filter(w=>status[w.en]!==false)).slice(0,25-xs.length);
+  qz.innerHTML=`<div class="center"><button class="btn" id="qstart">Quiz: 25 words</button><p class="task">${xs.length} ✗ word${xs.length>1?"s":""}${extra.length?` + ${extra.length} more new words`:""}</p></div>`;
+  document.getElementById("qstart").onclick=()=>quiz(xs.concat(extra));
 }
 function quiz(items){
   const qz=document.getElementById("xquiz"); let i=0, ok=0; const missed=[];
